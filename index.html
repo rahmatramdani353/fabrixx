@@ -68,19 +68,44 @@
             background-color: #FFFFFF;
         }
 
-        /* Half-A4 Sheet Layout styling for Invoice & Kwitansi */
-        .sheet-full-a4 {
-            min-h: 297mm;
-        }
-        
+        /* Compact Half-A4 Sheet Layout styling for Invoice & Kwitansi */
         .sheet-half-a4 {
             max-width: 210mm !important;
-            min-height: 140mm !important;
+            min-height: 135mm !important;
+            max-height: 145mm !important;
             padding: 20px 30px !important;
             margin-top: 10px !important;
             margin-bottom: 10px !important;
             border: 1px solid #E2E8F0;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dynamic Document Watermark Overlay */
+        .stamp-overlay {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.85;
+            mix-blend-mode: multiply;
+        }
+
+        .watermark-banner {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg);
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+            white-space: nowrap;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 10px 30px;
+            border-style: dashed;
+            border-width: 4px;
+            border-radius: 14px;
+            opacity: 0.28;
+            font-size: 2.2rem;
         }
 
         /* Print Media Styles for Perfect A4 Downloads */
@@ -103,9 +128,9 @@
                 border: none !important;
             }
             .sheet-half-a4 {
-                min-height: 135mm !important;
-                max-height: 145mm !important;
-                padding: 12px 18px !important;
+                min-height: 130mm !important;
+                max-height: 140mm !important;
+                padding: 10px 15px !important;
                 page-break-after: avoid !important;
                 page-break-inside: avoid !important;
             }
@@ -117,43 +142,13 @@
                 margin: 0;
             }
         }
-
-        /* Document Watermark Overlay */
-        .stamp-overlay {
-            position: absolute;
-            pointer-events: none;
-            opacity: 0.85;
-            mix-blend-mode: multiply;
-        }
-
-        /* High Visibility Clear Watermarks */
-        .watermark-banner {
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-12deg);
-            pointer-events: none;
-            user-select: none;
-            z-index: 0;
-            white-space: nowrap;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            padding: 8px 25px;
-            border-style: dashed;
-            border-width: 4px;
-            border-radius: 14px;
-            opacity: 0.28;
-            font-size: 1.75rem;
-        }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-slate-100">
 
-    <!-- LOGIN AUTHENTICATION OVERLAY -->
+    <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
         <div class="bg-brand-sidebar text-white rounded-2xl w-full max-w-md p-8 shadow-2xl border border-slate-700/60 relative overflow-hidden">
-            <!-- Decorative Accent Bar -->
             <div class="absolute top-0 left-0 right-0 h-2 bg-brand-accent"></div>
 
             <div class="text-center space-y-3 mb-8">
@@ -179,7 +174,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-semibold mb-1">Password Password:</label>
+                    <label class="block text-slate-300 font-semibold mb-1">Password:</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fa-solid fa-lock"></i>
@@ -255,14 +250,14 @@
                 </button>
                 <button onclick="switchTab('pengaturan')" id="nav-pengaturan" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-700/50 hover:text-white">
                     <i class="fa-solid fa-gear w-5"></i>
-                    <span>Pengaturan Perusahaan & GAS</span>
+                    <span>Pengaturan Perusahaan</span>
                 </button>
             </nav>
         </div>
 
         <!-- Sidebar Footer & Logout -->
         <div class="p-4 border-t border-slate-700/60 text-xs text-slate-400 flex justify-between items-center">
-            <span>ERP v2.5 Enterprise</span>
+            <span>ERP v3.0 Enterprise</span>
             <button onclick="handleLogout()" class="text-rose-400 hover:text-rose-300 text-xs font-semibold flex items-center space-x-1" title="Keluar dari sistem">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <span>Logout</span>
@@ -270,7 +265,6 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         
         <!-- Mobile Topbar -->
@@ -295,16 +289,14 @@
             <span id="toastText" class="text-xs font-semibold">Notifikasi sistem</span>
         </div>
 
-        <!-- Dynamic Main Scrollable View Container -->
         <main id="mainContainer" class="flex-1 overflow-y-auto p-4 md:p-8">
             
             <!-- 1. DASHBOARD ERP VIEW -->
             <section id="view-dashboard" class="tab-view space-y-6">
-                <!-- Welcome Banner -->
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800" id="dashWelcomeTitle">Dashboard Fabrikasi & Proyek Besi</h2>
-                        <p class="text-slate-500 text-sm mt-1" id="dashCompanySub text">Selamat datang kembali, <span id="dashDirectorName" class="font-semibold text-slate-700">Ir. Hendra Wijaya</span> (<span id="dashCompanyName">PT KARYA BAJA NANTARA</span>)</p>
+                        <p class="text-slate-500 text-sm mt-1">Selamat datang kembali, <span id="dashDirectorName" class="font-semibold text-slate-700">Ir. Hendra Wijaya</span> (<span id="dashCompanyName">PT KARYA BAJA NANTARA</span>)</p>
                     </div>
                     <button onclick="openNewProjectModal()" class="bg-brand-accent hover:bg-brand-accentHover text-slate-950 font-bold px-5 py-3 rounded-xl flex items-center space-x-2 shadow-md hover:shadow-lg transition-all text-sm">
                         <i class="fa-solid fa-plus text-base"></i>
@@ -312,9 +304,8 @@
                     </button>
                 </div>
 
-                <!-- KPI Metric Cards Grid -->
+                <!-- KPI Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <!-- Total Nilai Kontrak -->
                     <div class="bg-brand-dark rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
                         <div class="absolute -right-4 -bottom-4 text-slate-800/40 text-7xl font-bold">
                             <i class="fa-solid fa-file-contract"></i>
@@ -324,21 +315,18 @@
                         <p class="text-xs text-slate-400 mt-2" id="kpiCountProject">Dari 0 Proyek Tercatat</p>
                     </div>
 
-                    <!-- Proyeksi Laba Bersih -->
                     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">PROYEKSI LABA BERSIH</p>
                         <h3 class="text-2xl font-extrabold text-emerald-600 mt-2" id="kpiLabaBersih">Rp 0</h3>
                         <p class="text-xs text-emerald-700 font-medium mt-2 bg-emerald-50 inline-block px-2 py-0.5 rounded" id="kpiMarginEst">Est. Margin ~0%</p>
                     </div>
 
-                    <!-- Total Sisa Piutang -->
                     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">TOTAL SISA PIUTANG</p>
                         <h3 class="text-2xl font-extrabold text-rose-600 mt-2" id="kpiSisaPiutang">Rp 0</h3>
                         <p class="text-xs text-slate-400 mt-2">Tagihan Belum Lunas</p>
                     </div>
 
-                    <!-- Database Klien -->
                     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
                         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">DATABASE KLIEN</p>
                         <h3 class="text-2xl font-extrabold text-slate-800 mt-2" id="kpiTotalKlien">0 Klien</h3>
@@ -346,7 +334,7 @@
                     </div>
                 </div>
 
-                <!-- Active Projects Overview Table -->
+                <!-- Projects Table -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-5 border-b border-slate-100 flex justify-between items-center">
                         <h3 class="font-bold text-slate-800 text-lg flex items-center space-x-2">
@@ -376,7 +364,6 @@
 
             <!-- 2. PROYEK & PEKERJAAN VIEW -->
             <section id="view-proyek" class="tab-view space-y-6 hidden">
-                <!-- Selected Focus Project Banner -->
                 <div class="bg-brand-dark rounded-2xl p-6 text-white shadow-md relative">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -390,11 +377,10 @@
                                 <span id="projCardAddress">Perumahan Graha Raya Bintaro, Tangerang Selatan</span>
                             </p>
                             <p class="text-slate-400 text-xs mt-1">
-                                Customer (PIHAK PERTAMA - Pemberi Kerja): <span id="projCardCustomer" class="text-white font-semibold">Bpk. Ahmad Subagja</span>
+                                Pemberi Kerja: <span id="projCardCustomer" class="text-white font-semibold">Bpk. Ahmad Subagja</span>
                             </p>
                         </div>
                         
-                        <!-- Actions Grid inside Project Banner -->
                         <div class="grid grid-cols-2 gap-2 w-full md:w-auto">
                             <button onclick="switchTab('rab')" class="bg-brand-accent hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 shadow transition">
                                 <i class="fa-solid fa-calculator"></i>
@@ -416,14 +402,14 @@
                     </div>
                 </div>
 
-                <!-- Quick Document Hub Card Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <!-- Document Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
                     <div onclick="openDocumentModal('rab')" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-amber-400 shadow-sm hover:shadow cursor-pointer transition flex flex-col items-center text-center group">
                         <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-3 group-hover:bg-amber-500 group-hover:text-white transition">
                             <i class="fa-solid fa-file-lines"></i>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Quotation / RAB</h4>
-                        <p class="text-xs text-slate-400 mt-1">Rincian Anggaran Biaya</p>
+                        <p class="text-xs text-slate-400 mt-1">Penawaran Harga</p>
                     </div>
 
                     <div onclick="openDocumentModal('kontrak')" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-amber-400 shadow-sm hover:shadow cursor-pointer transition flex flex-col items-center text-center group">
@@ -431,7 +417,7 @@
                             <i class="fa-solid fa-handshake"></i>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Surat Perjanjian</h4>
-                        <p class="text-xs text-slate-400 mt-1">Kontrak Kerja & Pasal-Pasal</p>
+                        <p class="text-xs text-slate-400 mt-1">Kontrak Kerja & Pasal</p>
                     </div>
 
                     <div onclick="openDocumentModal('spk')" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-amber-400 shadow-sm hover:shadow cursor-pointer transition flex flex-col items-center text-center group">
@@ -439,7 +425,7 @@
                             <i class="fa-solid fa-clipboard-check"></i>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">SPK Produksi</h4>
-                        <p class="text-xs text-slate-400 mt-1">Surat Perintah Kerja Fabricator</p>
+                        <p class="text-xs text-slate-400 mt-1">Surat Perintah Kerja</p>
                     </div>
 
                     <div onclick="openDocumentModal('invoice')" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-amber-400 shadow-sm hover:shadow cursor-pointer transition flex flex-col items-center text-center group">
@@ -447,15 +433,15 @@
                             <i class="fa-solid fa-receipt"></i>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Invoice Tagihan</h4>
-                        <p class="text-xs text-slate-400 mt-1">Custom Total, DP & Sisa</p>
+                        <p class="text-xs text-slate-400 mt-1">Tagihan Otomatis RAB</p>
                     </div>
 
                     <div onclick="openDocumentModal('kwitansi')" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-amber-400 shadow-sm hover:shadow cursor-pointer transition flex flex-col items-center text-center group">
                         <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl mb-3 group-hover:bg-amber-600 group-hover:text-white transition">
                             <i class="fa-solid fa-file-contract"></i>
                         </div>
-                        <h4 class="font-bold text-slate-800 text-sm">Kwitansi Pembayaran</h4>
-                        <p class="text-xs text-slate-400 mt-1">Format Setengah A4 & Status</p>
+                        <h4 class="font-bold text-slate-800 text-sm">Kwitansi Setengah A4</h4>
+                        <p class="text-xs text-slate-400 mt-1">Format Setengah A4 & Watermark</p>
                     </div>
 
                     <div onclick="openDocumentModal('bast')" class="bg-white p-4 rounded-xl border border-slate-200 hover:border-amber-400 shadow-sm hover:shadow cursor-pointer transition flex flex-col items-center text-center group">
@@ -467,13 +453,13 @@
                     </div>
                 </div>
 
-                <!-- Financial Balance Summary Card -->
+                <!-- Financial Balance Summary -->
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
                     <h3 class="font-bold text-slate-800 text-lg flex items-center justify-between">
                         <span>Ringkasan Keuangan & Tagihan Proyek</span>
                         <div class="flex items-center space-x-2">
                             <button onclick="openDocumentModal('invoice')" class="text-xs bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition">
-                                <i class="fa-solid fa-file-invoice-dollar mr-1"></i> Custom Invoice Tagihan
+                                <i class="fa-solid fa-file-invoice-dollar mr-1"></i> Invoice Tagihan
                             </button>
                             <button onclick="openDocumentModal('kwitansi')" class="text-xs bg-slate-900 text-amber-400 font-bold px-3 py-1.5 rounded-lg hover:bg-slate-800 transition">
                                 <i class="fa-solid fa-print mr-1"></i> Cetak Kwitansi Setengah A4
@@ -483,12 +469,15 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <span class="text-xs font-semibold text-slate-500 block uppercase">Total Nilai Pekerjaan (RAB + PPN)</span>
+                            <span class="text-xs font-semibold text-slate-500 block uppercase">Total Nilai Pekerjaan (Otomatis RAB)</span>
                             <span class="text-xl font-extrabold text-slate-900 mt-1 block" id="projSummaryTotal">Rp 0</span>
                         </div>
                         <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
                             <span class="text-xs font-semibold text-emerald-700 block uppercase">DP & Pembayaran Masuk</span>
-                            <span class="text-xl font-extrabold text-emerald-700 mt-1 block" id="projSummaryPaid">Rp 0</span>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="text-xl font-extrabold text-emerald-700 block" id="projSummaryPaid">Rp 0</span>
+                                <button onclick="promptEditDp()" class="text-xs text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded font-bold">Edit DP</button>
+                            </div>
                         </div>
                         <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
                             <span class="text-xs font-semibold text-rose-700 block uppercase">Sisa Tagihan Pelunasan</span>
@@ -500,7 +489,6 @@
 
             <!-- 3. RAB BUILDER SPREADSHEET VIEW -->
             <section id="view-rab" class="tab-view space-y-6 hidden">
-                <!-- RAB Context Header Banner -->
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <div class="flex items-center space-x-2">
@@ -508,10 +496,9 @@
                             <span class="text-xs text-slate-500 font-mono" id="rabContextId">PRJ/001/IX/2026</span>
                         </div>
                         <h2 class="text-xl font-bold text-slate-800 mt-1" id="rabContextTitle">Pembuatan & Pemasangan Kanopi Mezzanine Alderon & Pagar Sliding</h2>
-                        <p class="text-slate-500 text-xs mt-0.5">Customer (Pemberi Kerja): <span id="rabContextCustomer" class="font-medium text-slate-700">Bpk. Ahmad Subagja</span> • Lokasi: <span id="rabContextLocation" class="text-slate-600">Graha Raya Bintaro</span></p>
+                        <p class="text-slate-500 text-xs mt-0.5">Pemberi Kerja: <span id="rabContextCustomer" class="font-medium text-slate-700">Bpk. Ahmad Subagja</span> • Lokasi: <span id="rabContextLocation" class="text-slate-600">Graha Raya Bintaro</span></p>
                     </div>
 
-                    <!-- PPN Toggle & Actions -->
                     <div class="flex items-center space-x-3">
                         <label class="flex items-center space-x-2 bg-slate-100 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer border border-slate-300">
                             <input type="checkbox" id="rabPpnToggle" onchange="toggleRABPpn()" checked class="w-4 h-4 text-amber-500 rounded focus:ring-amber-400">
@@ -524,7 +511,7 @@
                     </div>
                 </div>
 
-                <!-- RAB Table Spreadsheet Editor -->
+                <!-- RAB Table -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
                         <h3 class="font-bold text-sm flex items-center space-x-2">
@@ -554,12 +541,12 @@
                                 </tr>
                             </thead>
                             <tbody id="rabTableBody" class="divide-y divide-slate-200">
-                                <!-- Dynamic dynamic rows populated via JS -->
+                                <!-- Dynamic rows -->
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- RAB Calculation Totals Bar -->
+                    <!-- Totals Bar -->
                     <div class="bg-slate-50 p-6 border-t border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="space-y-1">
                             <span class="text-xs text-slate-500 block">Keterangan: Harga Jual otomatis menyertakan estimasi marjin keuntungan perusahaan.</span>
@@ -599,7 +586,7 @@
 
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-4 border-b border-slate-100">
-                        <input type="text" id="searchCustomerInput" onkeyup="renderCustomers()" placeholder="Cari customer berdasarkan nama, perusahaan, kota..." class="w-full md:w-96 px-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-brand-accent">
+                        <input type="text" id="searchCustomerInput" onkeyup="renderCustomers()" placeholder="Cari customer..." class="w-full md:w-96 px-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-brand-accent">
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
@@ -636,7 +623,7 @@
 
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-4 border-b border-slate-100">
-                        <input type="text" id="searchMaterialInput" onkeyup="renderMaterials()" placeholder="Cari material (e.g. Hollow 50x100, WF 200, Alderon)..." class="w-full md:w-96 px-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-brand-accent">
+                        <input type="text" id="searchMaterialInput" onkeyup="renderMaterials()" placeholder="Cari material..." class="w-full md:w-96 px-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-brand-accent">
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
@@ -658,179 +645,136 @@
                 </div>
             </section>
 
-            <!-- 6. PENGATURAN PERUSAHAAN & GAS BACKEND VIEW -->
-            <section id="view-pengaturan" class="tab-view space-y-6 hidden">
-                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Pengaturan Perusahaan, Rekening & GAS Cloud Backend</h2>
-                        <p class="text-slate-500 text-sm mt-1">Edit data PT/CV, Rekening Bank, PPN %, Logo, Stempel PNG, dan URL Google Apps Script</p>
-                    </div>
-                    <button onclick="saveCompanySettings()" class="bg-brand-accent hover:bg-brand-accentHover text-slate-950 font-bold px-6 py-3 rounded-xl text-sm flex items-center space-x-2 shadow-md">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Simpan Pengaturan</span>
-                    </button>
-                </div>
-
-                <!-- GAS Cloud Connection Card Banner -->
-                <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-6 border border-slate-700 shadow-md space-y-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="bg-emerald-500 text-slate-950 font-extrabold text-[10px] px-2.5 py-1 rounded uppercase tracking-wide">GOOGLE APPS SCRIPT BACKEND</span>
-                            <h3 class="text-lg font-bold text-white mt-1">Koneksi Backend Database (Google Sheets API)</h3>
-                            <p class="text-slate-300 text-xs mt-0.5">Hubungkan ERP ini ke Web App URL dari Google Apps Script untuk menyimpan & mensinkronisasi database secara online.</p>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="syncDataToGas()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center space-x-1 shadow">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <span>Upload Database ke GAS</span>
-                            </button>
-                            <button onclick="fetchDataFromGas()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl border border-slate-600 transition flex items-center space-x-1">
-            <!-- 6. PENGATURAN PERUSAHAAN & SYSTEM VIEW -->
+            <!-- 6. PENGATURAN PERUSAHAAN VIEW -->
             <section id="view-pengaturan" class="tab-view space-y-6 hidden">
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex justify-between items-center">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Pengaturan Perusahaan, Rekening & Pajak</h2>
-                        <p class="text-slate-500 text-sm mt-1">Edit data PT/CV, Rekening Bank, PPN %, Logo, Stempel PNG Transparan, dan Tanda Tangan Digital</p>
+                        <p class="text-slate-500 text-sm mt-1">Edit data PT/CV, Rekening Bank, PPN %, Logo, Stempel PNG Transparan</p>
                     </div>
-                    <button onclick="saveCompanySettings()" class="bg-brand-accent hover:bg-brand-accentHover text-slate-950 font-bold px-6 py-3 rounded-xl text-sm flex items-center space-x-2 shadow-md">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Simpan Pengaturan</span>
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="saveCompanySettings()" class="bg-brand-accent hover:bg-brand-accentHover text-slate-950 font-bold px-6 py-3 rounded-xl text-sm flex items-center space-x-2 shadow-md">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan Pengaturan</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Left Column: Legal & Profile Info (2 Cols) -->
                     <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
                         <h3 class="font-bold text-slate-800 border-b border-slate-100 pb-3 flex items-center space-x-2">
                             <i class="fa-solid fa-building text-amber-500"></i>
-                            <span>Profil Perusahaan & Legalitas (PIHAK KEDUA - Penerima Kerja)</span>
+                            <span>Profil Perusahaan & Legalitas (Penerima Kerja)</span>
                         </h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nama Resmi Perusahaan (PT/CV):</label>
-                                <input type="text" id="cfgCompanyName" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:border-brand-accent focus:outline-none" value="PT KARYA BAJA NANTARA">
+                                <label class="font-semibold text-slate-600 block mb-1">Nama Resmi Perusahaan (PT/CV):</label>
+                                <input type="text" id="cfgCompanyName" class="w-full p-2.5 border border-slate-300 rounded-xl font-semibold focus:border-brand-accent focus:outline-none" value="PT KARYA BAJA NANTARA">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nama Brand / Commercial Name:</label>
-                                <input type="text" id="cfgBrandName" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:border-brand-accent focus:outline-none" value="FABRIX STEEL & FABRICATION">
+                                <label class="font-semibold text-slate-600 block mb-1">Nama Brand / Commercial Name:</label>
+                                <input type="text" id="cfgBrandName" class="w-full p-2.5 border border-slate-300 rounded-xl font-semibold focus:border-brand-accent focus:outline-none" value="FABRIX STEEL & FABRICATION">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Tagline Layanan:</label>
-                                <input type="text" id="cfgTagline" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none" value="Spesialis Konstruksi Steel, Kanopi, Railing, Tangga & Heavy Structure">
+                                <label class="font-semibold text-slate-600 block mb-1">Tagline Layanan:</label>
+                                <input type="text" id="cfgTagline" class="w-full p-2.5 border border-slate-300 rounded-xl focus:border-brand-accent focus:outline-none" value="Spesialis Konstruksi Steel, Kanopi, Railing, Tangga & Heavy Structure">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Alamat Lengkap Workshop / Kantor:</label>
-                                <textarea id="cfgAddress" rows="2" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none">Jl. Industri Fabrikasi No. 88, KAWASAN WORKSHOP BESI, Kab. Bogor, Jawa Barat</textarea>
+                                <label class="font-semibold text-slate-600 block mb-1">Alamat Lengkap Workshop / Kantor:</label>
+                                <textarea id="cfgAddress" rows="2" class="w-full p-2.5 border border-slate-300 rounded-xl focus:border-brand-accent focus:outline-none">Jl. Industri Fabrikasi No. 88, KAWASAN WORKSHOP BESI, Kab. Bogor, Jawa Barat</textarea>
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Kota / Kabupaten:</label>
-                                <input type="text" id="cfgCity" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none" value="Kab. Bogor">
+                                <label class="font-semibold text-slate-600 block mb-1">Kota / Kabupaten:</label>
+                                <input type="text" id="cfgCity" class="w-full p-2.5 border border-slate-300 rounded-xl focus:border-brand-accent focus:outline-none" value="Kab. Bogor">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Provinsi & Kode Pos:</label>
-                                <input type="text" id="cfgProvince" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none" value="Jawa Barat 16916">
+                                <label class="font-semibold text-slate-600 block mb-1">Provinsi & Kode Pos:</label>
+                                <input type="text" id="cfgProvince" class="w-full p-2.5 border border-slate-300 rounded-xl focus:border-brand-accent focus:outline-none" value="Jawa Barat 16916">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Telepon / WhatsApp Official:</label>
-                                <input type="text" id="cfgPhone" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none" value="0812-9988-7766">
+                                <label class="font-semibold text-slate-600 block mb-1">Telepon / WhatsApp Official:</label>
+                                <input type="text" id="cfgPhone" class="w-full p-2.5 border border-slate-300 rounded-xl focus:border-brand-accent focus:outline-none" value="0812-9988-7766">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Email Perusahaan:</label>
-                                <input type="email" id="cfgEmail" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none" value="info@karyabajanantara.co.id">
+                                <label class="font-semibold text-slate-600 block mb-1">Email Perusahaan:</label>
+                                <input type="email" id="cfgEmail" class="w-full p-2.5 border border-slate-300 rounded-xl focus:border-brand-accent focus:outline-none" value="info@karyabajanantara.co.id">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nomor NIB (Nomor Induk Berusaha):</label>
-                                <input type="text" id="cfgNib" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-mono focus:border-brand-accent focus:outline-none" value="9120004561229">
+                                <label class="font-semibold text-slate-600 block mb-1">Nomor NIB (Nomor Induk Berusaha):</label>
+                                <input type="text" id="cfgNib" class="w-full p-2.5 border border-slate-300 rounded-xl font-mono focus:border-brand-accent focus:outline-none" value="9120004561229">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nomor NPWP Perusahaan:</label>
-                                <input type="text" id="cfgNpwp" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-mono focus:border-brand-accent focus:outline-none" value="01.345.678.9-412.000">
+                                <label class="font-semibold text-slate-600 block mb-1">Nomor NPWP Perusahaan:</label>
+                                <input type="text" id="cfgNpwp" class="w-full p-2.5 border border-slate-300 rounded-xl font-mono focus:border-brand-accent focus:outline-none" value="01.345.678.9-412.000">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Status Perpajakan PKP:</label>
-                                <select id="cfgPkpStatus" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none">
-                                    <option value="PKP (Pengusaha Kena Pajak)">PKP (Pengusaha Kena Pajak)</option>
-                                    <option value="Non-PKP">Non-PKP</option>
-                                </select>
+                                <label class="font-semibold text-slate-600 block mb-1">Tarif PPN (%):</label>
+                                <input type="number" id="cfgPpnRate" class="w-full p-2.5 border border-slate-300 rounded-xl font-bold focus:border-brand-accent focus:outline-none" value="11">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Tarif PPN (%):</label>
-                                <input type="number" id="cfgPpnRate" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold focus:border-brand-accent focus:outline-none" value="11">
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nama Direktur / Pemilik (PIHAK KEDUA):</label>
-                                <input type="text" id="cfgDirector" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:border-brand-accent focus:outline-none" value="Ir. Hendra Wijaya">
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Jabatan Pemimpin:</label>
-                                <input type="text" id="cfgDirectorTitle" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:border-brand-accent focus:outline-none" value="Direktur Utama">
+                                <label class="font-semibold text-slate-600 block mb-1">Nama Direktur (Penerima Kerja):</label>
+                                <input type="text" id="cfgDirector" class="w-full p-2.5 border border-slate-300 rounded-xl font-semibold focus:border-brand-accent focus:outline-none" value="Ir. Hendra Wijaya">
                             </div>
                         </div>
 
-                        <!-- Bank Account Settings for Invoice -->
                         <h3 class="font-bold text-slate-800 border-b border-slate-100 pt-4 pb-3 flex items-center space-x-2">
                             <i class="fa-solid fa-building-columns text-emerald-600"></i>
                             <span>Rekening Bank Pembayaran Invoice</span>
                         </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nama Bank:</label>
-                                <input type="text" id="cfgBankName" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:border-brand-accent focus:outline-none" value="BANK MANDIRI">
+                                <label class="font-semibold text-slate-600 block mb-1">Nama Bank:</label>
+                                <input type="text" id="cfgBankName" class="w-full p-2.5 border border-slate-300 rounded-xl font-semibold focus:border-brand-accent focus:outline-none" value="BANK MANDIRI">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Nomor Rekening:</label>
-                                <input type="text" id="cfgBankAccNo" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-mono font-bold focus:border-brand-accent focus:outline-none" value="133-00-9988-7711">
+                                <label class="font-semibold text-slate-600 block mb-1">Nomor Rekening:</label>
+                                <input type="text" id="cfgBankAccNo" class="w-full p-2.5 border border-slate-300 rounded-xl font-mono font-bold focus:border-brand-accent focus:outline-none" value="133-00-9988-7711">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-slate-600 block mb-1">Atas Nama Rekening:</label>
-                                <input type="text" id="cfgBankAccName" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:border-brand-accent focus:outline-none" value="PT KARYA BAJA NANTARA">
+                                <label class="font-semibold text-slate-600 block mb-1">Atas Nama Rekening:</label>
+                                <input type="text" id="cfgBankAccName" class="w-full p-2.5 border border-slate-300 rounded-xl font-semibold focus:border-brand-accent focus:outline-none" value="PT KARYA BAJA NANTARA">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right Column: Images / Signature / Transparent Stamps Upload (1 Col) -->
+                    <!-- Right Column: Stamp Uploads -->
                     <div class="space-y-5">
-                        <!-- Logo Upload Box -->
                         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
                             <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
                                 <i class="fa-solid fa-image text-amber-500"></i>
                                 <span>Logo Perusahaan (Header A4)</span>
                             </h3>
-                            <p class="text-[11px] text-slate-400">Logo akan tampil di Kop Surat A4, Penawaran & Invoice.</p>
-                            
                             <div class="border-2 border-dashed border-amber-300 rounded-xl p-4 text-center bg-amber-50/30 flex flex-col items-center justify-center">
-                                <img id="logoPreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo Preview" class="max-h-16 mb-2 hidden object-contain">
+                                <img id="logoPreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo" class="max-h-16 mb-2 hidden object-contain">
                                 <i id="logoIcon" class="fa-solid fa-cloud-arrow-up text-3xl text-amber-500 mb-2"></i>
                                 <label class="cursor-pointer bg-white text-slate-700 font-semibold px-4 py-1.5 rounded-lg text-xs border border-slate-300 shadow-sm hover:bg-slate-50 transition">
-                                    Upload File Logo (PNG/JPG)
+                                    Upload File Logo
                                     <input type="file" id="logoInput" accept="image/*" onchange="handleImageUpload(this, 'logo')" class="hidden">
                                 </label>
                             </div>
                         </div>
 
-                        <!-- Signature Upload Box -->
                         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
                             <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
                                 <i class="fa-solid fa-signature text-blue-500"></i>
-                                <span>Tanda Tangan Digital Pimpinan</span>
+                                <span>Tanda Tangan Digital</span>
                             </h3>
                             <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50 flex flex-col items-center justify-center">
-                                <img id="signaturePreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Signature Preview" class="max-h-20 mb-2 hidden object-contain">
+                                <img id="signaturePreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Signature" class="max-h-20 mb-2 hidden object-contain">
                                 <i id="signatureIcon" class="fa-solid fa-upload text-2xl text-slate-400 mb-2"></i>
                                 <label class="cursor-pointer bg-white text-slate-700 font-semibold px-4 py-1.5 rounded-lg text-xs border border-slate-300 shadow-sm hover:bg-slate-50 transition">
-                                    Upload Signature (PNG Transparan)
+                                    Upload Signature PNG
                                     <input type="file" id="signatureInput" accept="image/*" onchange="handleImageUpload(this, 'signature')" class="hidden">
                                 </label>
                             </div>
                         </div>
 
-                        <!-- Transparent Stamp Upload Box -->
                         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
                             <div class="flex justify-between items-center">
                                 <h3 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
                                     <i class="fa-solid fa-stamp text-emerald-600"></i>
-                                    <span>Stempel Basah Perusahaan</span>
+                                    <span>Stempel Basah Transparan</span>
                                 </h3>
                                 <label class="flex items-center space-x-1 cursor-pointer">
                                     <input type="checkbox" id="cfgShowStamp" checked class="w-4 h-4 text-amber-500 rounded">
@@ -838,14 +782,13 @@
                                 </label>
                             </div>
                             <div class="border-2 border-dashed border-emerald-300 rounded-xl p-4 text-center bg-emerald-50/20 flex flex-col items-center justify-center">
-                                <img id="stampPreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Stamp Preview" class="max-h-24 mb-2 hidden object-contain">
+                                <img id="stampPreview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Stamp" class="max-h-24 mb-2 hidden object-contain">
                                 <i id="stampIcon" class="fa-solid fa-stamp text-3xl text-emerald-500 mb-2"></i>
                                 <label class="cursor-pointer bg-white text-slate-700 font-semibold px-4 py-1.5 rounded-lg text-xs border border-slate-300 shadow-sm hover:bg-slate-50 transition">
-                                    Upload Stempel PNG Transparan
+                                    Upload Stempel PNG
                                     <input type="file" id="stampInput" accept="image/*" onchange="handleImageUpload(this, 'stamp')" class="hidden">
                                 </label>
                             </div>
-                            <p class="text-[10px] text-slate-400">Rekomendasi file PNG dengan latar transparan agar menimpa tanda tangan secara realistis.</p>
                         </div>
                     </div>
                 </div>
@@ -853,16 +796,14 @@
         </main>
     </div>
 
-    <!-- DOCUMENT PREVIEW MODAL (FULLSCREEN PRINT PREVIEW & EDITABLE DOCUMENTS) -->
+    <!-- DOCUMENT PREVIEW MODAL -->
     <div id="documentModal" class="fixed inset-0 bg-slate-900/80 z-50 hidden backdrop-blur-sm flex flex-col">
-        <!-- Document Modal Top Controls -->
         <div class="bg-slate-900 text-white p-4 px-6 flex flex-wrap justify-between items-center border-b border-slate-700 gap-3 no-print">
             <div class="flex items-center space-x-3">
                 <span class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded font-bold text-xs uppercase" id="docModalCategoryTag">DOKUMEN LEGAL</span>
                 <h3 class="text-base font-bold text-white" id="docModalTitle">Surat Perjanjian Kerja (Kontrak)</h3>
             </div>
             
-            <!-- Quick Document Switcher Tabs -->
             <div class="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs font-semibold overflow-x-auto">
                 <button onclick="switchDocType('rab')" id="docTab-rab" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white">RAB / QUO</button>
                 <button onclick="switchDocType('kontrak')" id="docTab-kontrak" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white">Kontrak Kerja</button>
@@ -872,7 +813,6 @@
                 <button onclick="switchDocType('bast')" id="docTab-bast" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white">BAST Legal</button>
             </div>
 
-            <!-- Print & Export Buttons -->
             <div class="flex items-center space-x-2">
                 <button onclick="exportToWord()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center space-x-1 transition shadow">
                     <i class="fa-solid fa-file-word"></i>
@@ -892,13 +832,9 @@
             </div>
         </div>
 
-        <!-- Document Viewer Body (A4 & Half-A4 Paper Sheet Container) -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-800/60 flex justify-center items-start">
-            
-            <!-- A4 / Half-A4 Formatted Document Sheet -->
             <div id="printableArea" class="bg-white text-slate-900 w-full max-w-[210mm] p-8 md:p-12 shadow-2xl relative my-auto border border-slate-200 text-xs leading-relaxed space-y-4 rounded-md">
                 
-                <!-- Dynamic Header / Kop Surat -->
                 <div id="docHeader" class="border-b-2 border-slate-900 pb-3 flex justify-between items-start">
                     <div class="flex items-center space-x-4">
                         <img id="docLogoImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo" class="max-h-14 max-w-[130px] object-contain hidden">
@@ -910,50 +846,14 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <span id="docMetaNumber" class="text-xs font-bold text-slate-800 font-mono block">NO: PRJ/001/IX/2026</span>
-                        <span id="docMetaDate" class="text-[11px] text-slate-500 block mt-1">Tanggal: 16 September 2026</span>
-                        <span id="docMetaStatus" class="inline-block mt-1 bg-slate-100 text-slate-700 font-bold text-[10px] px-2 py-0.5 rounded border border-slate-300 uppercase">Status: Official</span>
+                        <div id="docMetaNumber" class="text-xs font-extrabold text-slate-900 bg-slate-100 px-3 py-1.5 rounded border border-slate-300 font-mono tracking-wide shadow-sm inline-block">NO: QUO/PRJ/001/IX/2026</div>
+                        <span id="docMetaDate" class="text-[11px] text-slate-500 block mt-1.5">Tanggal: 16 September 2026</span>
                     </div>
                 </div>
 
-                <!-- Document Main Editable Content Container -->
                 <div id="docMainContent" class="space-y-4">
-                    <!-- Dynamic Document HTML injected here -->
+                    <!-- Injected via JavaScript -->
                 </div>
-
-                <!-- Dynamic Signature Footer Section -->
-                <div id="docSignatureFooter" class="pt-4 border-t border-slate-200 grid grid-cols-2 gap-6 text-center break-inside-avoid">
-                    <!-- Pihak Pertama (Pemberi Kerja) -->
-                    <div class="space-y-8">
-                        <p class="font-bold text-slate-700 text-xs" id="sigLabelPihak1">PIHAK PERTAMA (Pemberi Kerja)</p>
-                        <div class="h-16 flex items-center justify-center">
-                            <span class="text-slate-300 italic text-[11px]">[ Tanda Tangan Pemberi Kerja ]</span>
-                        </div>
-                        <div>
-                            <p id="sigNamePihak1" class="font-bold underline text-slate-900">Bpk. Ahmad Subagja</p>
-                            <p id="sigTitlePihak1" class="text-[10px] text-slate-500">Pemberi Kerja / Klien</p>
-                        </div>
-                    </div>
-
-                    <!-- Pihak Kedua (Penerima Kerja) -->
-                    <div class="space-y-8 relative">
-                        <p class="font-bold text-slate-700 text-xs" id="sigLabelPihak2">PIHAK KEDUA (Penerima Kerja)</p>
-                        
-                        <!-- Signature & Stamp Overlay Box -->
-                        <div class="h-16 flex items-center justify-center relative">
-                            <!-- Digital Signature Image -->
-                            <img id="docSignatureImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Signature" class="max-h-16 object-contain hidden z-10">
-                            <!-- Transparent Stamp Image Overlay -->
-                            <img id="docStampImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Stamp" class="stamp-overlay max-h-20 max-w-[120px] object-contain hidden left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20">
-                        </div>
-
-                        <div>
-                            <p id="sigNamePihak2" class="font-bold underline text-slate-900">Ir. Hendra Wijaya</p>
-                            <p id="sigTitlePihak2" class="text-[10px] text-slate-500">Direktur Utama (Penerima Kerja)</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -1071,9 +971,6 @@
     </div>
 
     <script>
-        const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxoFLBeZQOJAD-kUupaxvgse_qS02LqwuIG6eFjy7gp5ealPMh6rwZ09XLJsH2CCz48Xw/exec"; 
-
-        /* Global promise error handler to prevent UNHANDLEDREJECTION crashes */
         window.addEventListener('unhandledrejection', function(event) {
             console.warn('Captured unhandled promise rejection:', event.reason || event);
             if (event && event.preventDefault) {
@@ -1081,10 +978,12 @@
             }
         });
 
-        /* Primary Reactive App State stored in localStorage */
+        /* EMBEDDED GAS API URL */
+        const EMBEDDED_GAS_API_URL = "https://script.google.com/macros/s/AKfycbw.../exec";
+
+        /* Primary Reactive App State */
         let appState = {
             isAuthenticated: false,
-            gasUrl: DEFAULT_GAS_URL,
             company: {
                 name: "PT KARYA BAJA NANTARA",
                 brand: "FABRIX STEEL & FABRICATION",
@@ -1096,10 +995,8 @@
                 email: "info@karyabajanantara.co.id",
                 nib: "9120004561229",
                 npwp: "01.345.678.9-412.000",
-                pkpStatus: "PKP (Pengusaha Kena Pajak)",
                 ppnRate: 11,
                 director: "Ir. Hendra Wijaya",
-                directorTitle: "Direktur Utama",
                 bankName: "BANK MANDIRI",
                 bankAccNo: "133-00-9988-7711",
                 bankAccName: "PT KARYA BAJA NANTARA",
@@ -1129,11 +1026,8 @@
             materials: [
                 { id: "MAT-001", name: "Besi Hollow Galvanis 50x100 t=1.6mm (6 meter)", category: "Hollow", unit: "Batang", price: 185000 },
                 { id: "MAT-002", name: "Besi Hollow Galvanis 40x40 t=1.4mm (6 meter)", category: "Hollow", unit: "Batang", price: 110000 },
-                { id: "MAT-003", name: "Atap Alderon Double Layer Transparan / White", category: "Atap", unit: "m2", price: 210000 },
-                { id: "MAT-004", name: "Kawat Las LB-52 / Kobelco 3.2mm", category: "Consumables", unit: "Dus", price: 250000 },
-                { id: "MAT-005", name: "Cat Primer Epoxy Anti Karat Zinc Chromate", category: "Finishing", unit: "Galon", price: 340000 }
+                { id: "MAT-003", name: "Atap Alderon Double Layer Transparan / White", category: "Atap", unit: "m2", price: 210000 }
             ],
-            activeProjectId: "PRJ/001/IX/2026",
             projects: [
                 {
                     id: "PRJ/001/IX/2026",
@@ -1144,7 +1038,7 @@
                     date: "2026-09-16",
                     includePpn: true,
                     dpPaid: 25000000,
-                    customInvoiceTotal: null,
+                    spkNotes: "Pekerjaan fabrikasi wajib selesai dalam 14 hari kerja. Perhatikan pengelasan full penetrasi pada sambungan rangka kanopi.",
                     rabItems: [
                         { id: 1, item: "Fabrikasi & Rangka Mezzanine Hollow 50x100 t=1.6mm", spec: "Besi Hollow Galvanis 50x100, Cat Epoxy Zinc Chromate", qty: 45, unit: "m2", hppMat: 185000, labor: 95000, totalJual: 14850000 },
                         { id: 2, item: "Pemasangan Atap Alderon Twinwall", spec: "Alderon Double Layer Transparan 10mm Anti UV", qty: 45, unit: "m2", hppMat: 210000, labor: 50000, totalJual: 12825000 },
@@ -1153,100 +1047,148 @@
                     contractClauses: [
                         "PIHAK KEDUA (Penerima Kerja) berkewajiban melaksanakan pekerjaan fabrikasi & pemasangan konstruksi besi sesuai rincian tabel RAB yang telah disepakati.",
                         "PIHAK PERTAMA (Pemberi Kerja) wajib melakukan pembayaran Down Payment (DP) sebesar 50% saat penandatanganan akad perjanjian kerja ini.",
-                        "Pelunasan sisa pembayaran 50% wajib dibayarkan PIHAK PERTAMA (Pemberi Kerja) maksimal 3 hari setelah Berita Acara Serah Terima (BAST) ditandatangani.",
+                        "Pelunasan sisa pembayaran 50% wajib dibayarkan PIHAK PERTAMA (Pemberi Kerja) maksimal 3 hari setelah Berita Acara Serah Terima (BAST) ditandatangan.",
                         "Garansi struktur fabrikasi dan kebocoran atap berlaku selama 3 (tiga) bulan terhitung sejak serah terima pekerjaan."
-                    ],
-                    spkNotes: "Pekerjaan fabrikasi wajib selesai dalam 14 hari kerja. Perhatikan pengelasan full penetrasi pada sambungan rangka kanopi."
+                    ]
                 }
-            ]
+            ],
+            activeProjectId: "PRJ/001/IX/2026"
         };
 
         let currentDocumentType = 'kontrak';
 
-        window.onload = function() {
-            loadStateFromStorage();
-            checkAuth();
-            populateCompanyForm();
-            renderActiveProjectSelector();
-            renderDashboard();
-            renderRabTable();
-            renderCustomers();
-            renderMaterials();
-        };
+        /* Toast Notification Helper */
+        function showToast(message) {
+            const toast = document.getElementById('toastMessage');
+            const text = document.getElementById('toastText');
+            if (!toast || !text) return;
+            text.innerText = message;
+            toast.classList.remove('translate-x-full', 'opacity-0');
+            toast.classList.add('translate-x-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-full', 'opacity-0');
+            }, 3500);
+        }
 
-        function loadStateFromStorage() {
+        /* Storage & Backend GAS Sync */
+        function saveStateToStorage() {
             try {
-                const saved = localStorage.getItem('fabrix_erp_state');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    appState = { ...appState, ...parsed };
-                }
+                localStorage.setItem('FABRIX_ERP_STATE', JSON.stringify(appState));
+                syncToCloudBackend();
             } catch (e) {
-                console.error("Failed to load local storage state", e);
+                console.warn('LocalStorage error:', e);
             }
         }
 
-        function saveStateToStorage() {
+        function loadStateFromStorage() {
             try {
-                localStorage.setItem('fabrix_erp_state', JSON.stringify(appState));
-                syncDataToGasBackground();
+                const stored = localStorage.getItem('FABRIX_ERP_STATE');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && typeof parsed === 'object') {
+                        appState = { ...appState, ...parsed };
+                    }
+                }
             } catch (e) {
-                console.error("Storage error", e);
+                console.warn('LocalStorage read error:', e);
+            }
+        }
+
+        async function syncToCloudBackend() {
+            if (!EMBEDDED_GAS_API_URL || EMBEDDED_GAS_API_URL.includes("...")) return;
+            try {
+                await fetch(EMBEDDED_GAS_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'saveAll', data: appState })
+                });
+            } catch (err) {
+                console.warn("Background cloud sync warning:", err);
             }
         }
 
         function checkAuth() {
-            const loginScreen = document.getElementById('loginScreen');
-            if (appState.isAuthenticated) {
-                loginScreen.classList.add('hidden');
+            const sessionAuth = sessionStorage.getItem('FABRIX_AUTH');
+            const loginEl = document.getElementById('loginScreen');
+            if (sessionAuth === 'true') {
+                appState.isAuthenticated = true;
+                if (loginEl) loginEl.classList.add('hidden');
             } else {
-                loginScreen.classList.remove('hidden');
+                appState.isAuthenticated = false;
+                if (loginEl) loginEl.classList.remove('hidden');
             }
         }
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('loginUsername').value;
-            const pass = document.getElementById('loginPassword').value;
-            const err = document.getElementById('loginErrorMessage');
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+            const errEl = document.getElementById('loginErrorMessage');
 
-            if (user === 'admin' && pass === 'admin123') {
+            if (EMBEDDED_GAS_API_URL && !EMBEDDED_GAS_API_URL.includes("...")) {
+                try {
+                    const res = await fetch(EMBEDDED_GAS_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'login', username: u, password: p })
+                    });
+                    const json = await res.json();
+                    if (json.status === 'success') {
+                        sessionStorage.setItem('FABRIX_AUTH', 'true');
+                        appState.isAuthenticated = true;
+                        if (errEl) errEl.classList.add('hidden');
+                        document.getElementById('loginScreen').classList.add('hidden');
+                        showToast("Berhasil masuk melalui Cloud Google Sheets!");
+                        return;
+                    }
+                } catch (err) {
+                    console.warn("Cloud GAS login fallback to local:", err);
+                }
+            }
+
+            // Local Fallback Auth
+            if (u === 'admin' && p === 'admin123') {
+                sessionStorage.setItem('FABRIX_AUTH', 'true');
                 appState.isAuthenticated = true;
-                err.classList.add('hidden');
-                saveStateToStorage();
-                checkAuth();
-                showToast("Berhasil login ke sistem!");
+                if (errEl) errEl.classList.add('hidden');
+                document.getElementById('loginScreen').classList.add('hidden');
+                showToast("Berhasil masuk ke FABRIX ERP System!");
             } else {
-                err.classList.remove('hidden');
+                if (errEl) {
+                    errEl.innerText = "Username atau password salah!";
+                    errEl.classList.remove('hidden');
+                }
             }
         }
 
         function handleLogout() {
+            sessionStorage.removeItem('FABRIX_AUTH');
             appState.isAuthenticated = false;
-            saveStateToStorage();
-            checkAuth();
-            showToast("Anda telah keluar dari sistem");
+            document.getElementById('loginScreen').classList.remove('hidden');
+            showToast("Anda telah keluar dari sistem.");
         }
 
+        /* Navigation & Tabs */
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
+            if (sidebar) sidebar.classList.toggle('-translate-x-full');
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-            const activeView = document.getElementById('view-' + tabId);
-            if (activeView) activeView.classList.remove('hidden');
-
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('bg-brand-accent', 'text-slate-950', 'font-semibold', 'shadow');
-                nav.classList.add('text-slate-300', 'hover:bg-slate-700/50');
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-brand-accent', 'text-slate-950', 'font-semibold', 'shadow');
+                el.classList.add('text-slate-300', 'hover:bg-slate-700/50', 'hover:text-white');
             });
 
-            const activeNav = document.getElementById('nav-' + tabId);
+            const activeView = document.getElementById(`view-${tabId}`);
+            const activeNav = document.getElementById(`nav-${tabId}`);
+
+            if (activeView) activeView.classList.remove('hidden');
             if (activeNav) {
+                activeNav.classList.remove('text-slate-300', 'hover:bg-slate-700/50', 'hover:text-white');
                 activeNav.classList.add('bg-brand-accent', 'text-slate-950', 'font-semibold', 'shadow');
-                activeNav.classList.remove('text-slate-300', 'hover:bg-slate-700/50');
             }
 
             const mobileTitle = document.getElementById('mobileTitle');
@@ -1254,46 +1196,146 @@
                 const titles = {
                     dashboard: 'Dashboard ERP',
                     proyek: 'Proyek & Pekerjaan',
-                    rab: 'RAB Builder',
+                    rab: 'RAB Builder (Spreadsheet)',
                     customer: 'Master Customer',
                     material: 'Katalog Material',
                     pengaturan: 'Pengaturan Perusahaan'
                 };
-                mobileTitle.textContent = titles[tabId] || 'FABRIX ERP';
+                mobileTitle.innerText = titles[tabId] || 'FABRIX ERP';
             }
 
             if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'proyek') renderProjectView();
             if (tabId === 'rab') renderRabTable();
             if (tabId === 'customer') renderCustomers();
             if (tabId === 'material') renderMaterials();
         }
 
+        /* Currency & Number Formatters */
+        function formatRupiah(num) {
+            return "Rp " + Number(num || 0).toLocaleString('id-ID');
+        }
+
+        /* Standard EYD/PUEBI Indonesian Number-to-Words Algorithm (Terbilang Rupiah) */
+        function terbilangRupiah(nilai) {
+            nilai = Math.abs(Number(nilai) || 0);
+            if (nilai === 0) return "Nol Rupiah";
+
+            const angka = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+            
+            function convert(n) {
+                if (n < 12) {
+                    return " " + angka[n];
+                } else if (n < 20) {
+                    return convert(n - 10) + " Belas";
+                } else if (n < 100) {
+                    return convert(Math.floor(n / 10)) + " Puluh" + convert(n % 10);
+                } else if (n < 200) {
+                    return " Seratus" + convert(n - 100);
+                } else if (n < 1000) {
+                    return convert(Math.floor(n / 100)) + " Ratus" + convert(n % 100);
+                } else if (n < 2000) {
+                    return " Seribu" + convert(n - 1000);
+                } else if (n < 1000000) {
+                    return convert(Math.floor(n / 1000)) + " Ribu" + convert(n % 1000);
+                } else if (n < 1000000000) {
+                    return convert(Math.floor(n / 1000000)) + " Juta" + convert(n % 1000000);
+                } else if (n < 1000000000000) {
+                    return convert(Math.floor(n / 1000000000)) + " Miliar" + convert(n % 1000000000);
+                } else {
+                    return " Nilai Terlalu Besar";
+                }
+            }
+
+            let hasil = convert(nilai).trim();
+            return hasil.charAt(0).toUpperCase() + hasil.slice(1) + " Rupiah";
+        }
+
+        /* Project & RAB Calculations */
         function getActiveProject() {
             return appState.projects.find(p => p.id === appState.activeProjectId) || appState.projects[0];
         }
 
-        function getActiveCustomer() {
-            const proj = getActiveProject();
-            if (!proj) return appState.customers[0];
-            return appState.customers.find(c => c.id === proj.customerId) || appState.customers[0];
+        function calculateProjectTotals(project) {
+            if (!project || !project.rabItems) return { subtotal: 0, ppn: 0, grandTotal: 0, hppTotal: 0, profit: 0, profitPct: 0 };
+            
+            let subtotal = 0;
+            let hppTotal = 0;
+            project.rabItems.forEach(item => {
+                const totalJual = Number(item.totalJual) || ((Number(item.hppMat) + Number(item.labor)) * Number(item.qty));
+                subtotal += totalJual;
+                hppTotal += (Number(item.hppMat) + Number(item.labor)) * Number(item.qty);
+            });
+
+            const ppnRate = appState.company.ppnRate || 11;
+            const ppn = project.includePpn ? Math.round(subtotal * (ppnRate / 100)) : 0;
+            const grandTotal = subtotal + ppn;
+            const profit = subtotal - hppTotal;
+            const profitPct = hppTotal > 0 ? ((profit / hppTotal) * 100).toFixed(1) : 0;
+
+            return { subtotal, ppn, grandTotal, hppTotal, profit, profitPct };
         }
 
-        function renderActiveProjectSelector() {
+        /* Render Dashboard */
+        function renderDashboard() {
+            populateProjectSelector();
+            const comp = appState.company;
+            document.getElementById('dashDirectorName').innerText = comp.director || 'Direktur';
+            document.getElementById('dashCompanyName').innerText = comp.name || 'PT';
+
+            let totalKontrakAll = 0;
+            let totalPiutangAll = 0;
+            let totalLabaAll = 0;
+
+            const tbody = document.getElementById('dashboardProjectTable');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            appState.projects.forEach(p => {
+                const cust = appState.customers.find(c => c.id === p.customerId) || { name: 'Umum' };
+                const t = calculateProjectTotals(p);
+                const sisaTagihan = t.grandTotal - (Number(p.dpPaid) || 0);
+
+                totalKontrakAll += t.grandTotal;
+                totalPiutangAll += Math.max(0, sisaTagihan);
+                totalLabaAll += t.profit;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-slate-800">${p.id}<br><span class="text-xs font-sans text-slate-500 font-normal">${p.title}</span></td>
+                    <td class="p-4">${cust.name}<br><span class="text-xs text-slate-400">${p.location}</span></td>
+                    <td class="p-4 font-bold text-slate-900">${formatRupiah(t.grandTotal)}</td>
+                    <td class="p-4 font-semibold text-emerald-600">${formatRupiah(p.dpPaid)}</td>
+                    <td class="p-4 font-semibold text-rose-600">${formatRupiah(sisaTagihan)}</td>
+                    <td class="p-4 text-center space-x-2">
+                        <button onclick="switchActiveProject('${p.id}'); switchTab('proyek');" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold shadow">Kelola</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('kpiTotalKontrak').innerText = formatRupiah(totalKontrakAll);
+            document.getElementById('kpiCountProject').innerText = `Dari ${appState.projects.length} Proyek Tercatat`;
+            document.getElementById('kpiLabaBersih').innerText = formatRupiah(totalLabaAll);
+            document.getElementById('kpiMarginEst').innerText = `Est. Laba Bersih`;
+            document.getElementById('kpiSisaPiutang').innerText = formatRupiah(totalPiutangAll);
+            document.getElementById('kpiTotalKlien').innerText = `${appState.customers.length} Klien`;
+
+            renderProjectView();
+        }
+
+        function populateProjectSelector() {
             const selector = document.getElementById('activeProjectSelector');
             if (!selector) return;
-
-            selector.innerHTML = appState.projects.map(p => `
-                <option value="${p.id}" ${p.id === appState.activeProjectId ? 'selected' : ''}>
-                    ${p.id} — ${p.title}
-                </option>
-            `).join('');
-
-            const newProjCustSelect = document.getElementById('newProjCustomer');
-            if (newProjCustSelect) {
-                newProjCustSelect.innerHTML = appState.customers.map(c => `
-                    <option value="${c.id}">${c.name} (${c.type})</option>
-                `).join('');
-            }
+            selector.innerHTML = '';
+            appState.projects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = `${p.id} — ${p.title}`;
+                if (p.id === appState.activeProjectId) opt.selected = true;
+                selector.appendChild(opt);
+            });
         }
 
         function switchActiveProject(projId) {
@@ -1301,259 +1343,158 @@
             saveStateToStorage();
             renderDashboard();
             renderRabTable();
-            showToast(`Fokus proyek diubah ke ${projId}`);
+            showToast(`Fokus proyek diubah ke: ${projId}`);
         }
 
-        function formatRupiah(number) {
-            const num = Number(number) || 0;
-            return "Rp " + num.toLocaleString('id-ID');
+        /* Render Proyek & Pekerjaan View */
+        function renderProjectView() {
+            const p = getActiveProject();
+            if (!p) return;
+            const cust = appState.customers.find(c => c.id === p.customerId) || { name: 'Umum' };
+            const t = calculateProjectTotals(p);
+            const sisa = Math.max(0, t.grandTotal - (Number(p.dpPaid) || 0));
+
+            document.getElementById('projCardBadge').innerText = p.category || 'PROYEK';
+            document.getElementById('projCardNo').innerText = `No: ${p.id}`;
+            document.getElementById('projCardTitle').innerText = p.title;
+            document.getElementById('projCardAddress').innerText = p.location;
+            document.getElementById('projCardCustomer').innerText = cust.name;
+
+            document.getElementById('projSummaryTotal').innerText = formatRupiah(t.grandTotal);
+            document.getElementById('projSummaryPaid').innerText = formatRupiah(p.dpPaid);
+            document.getElementById('projSummaryRemaining').innerText = formatRupiah(sisa);
         }
 
-        function terbilangRupiah(nilai) {
-            nilai = Math.floor(Math.abs(Number(nilai) || 0));
-            if (nilai === 0) return "Nol Rupiah";
-            const huruf = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
-
-            function penyebut(n) {
-                if (n < 12) return " " + huruf[n];
-                if (n < 20) return penyebut(n - 10) + " Belas";
-                if (n < 100) return penyebut(Math.floor(n / 10)) + " Puluh" + penyebut(n % 10);
-                if (n < 200) return " Seratus" + penyebut(n - 100);
-                if (n < 1000) return penyebut(Math.floor(n / 100)) + " Ratus" + penyebut(n % 100);
-                if (n < 2000) return " Seribu" + penyebut(n - 1000);
-                if (n < 1000000) return penyebut(Math.floor(n / 1000)) + " Ribu" + penyebut(n % 1000);
-                if (n < 1000000000) return penyebut(Math.floor(n / 1000000)) + " Juta" + penyebut(n % 1000000);
-                if (n < 1000000000000) return penyebut(Math.floor(n / 1000000000)) + " Miliar" + penyebut(n % 1000000000);
-                if (n < 1000000000000000) return penyebut(Math.floor(n / 1000000000000)) + " Triliun" + penyebut(n % 1000000000000);
-                return "";
-            }
-            return (penyebut(nilai) + " Rupiah").trim().replace(/\s+/g, " ");
-        }
-
-        function calculateProjectTotals(proj) {
-            if (!proj) return { subtotal: 0, ppn: 0, grandTotal: 0, dpPaid: 0, remaining: 0, totalHpp: 0, profitEstimate: 0 };
-            
-            const subtotal = proj.rabItems.reduce((acc, item) => acc + (Number(item.totalJual) || 0), 0);
-            const ppn = proj.includePpn ? subtotal * (appState.company.ppnRate / 100) : 0;
-            const calculatedGrandTotal = subtotal + ppn;
-            const grandTotal = proj.customInvoiceTotal !== null && proj.customInvoiceTotal !== undefined && proj.customInvoiceTotal !== ""
-                ? Number(proj.customInvoiceTotal)
-                : calculatedGrandTotal;
-            const dpPaid = Number(proj.dpPaid) || 0;
-            const remaining = Math.max(0, grandTotal - dpPaid);
-            const totalHpp = proj.rabItems.reduce((acc, item) => acc + ((Number(item.hppMat) || 0) + (Number(item.labor) || 0)) * (Number(item.qty) || 0), 0);
-            const profitEstimate = Math.max(0, subtotal - totalHpp);
-
-            return { subtotal, ppn, grandTotal, dpPaid, remaining, totalHpp, profitEstimate };
-        }
-
-        function renderDashboard() {
-            const activeProj = getActiveProject();
-            const activeCust = getActiveCustomer();
-            const comp = appState.company;
-
-            document.getElementById('dashDirectorName').textContent = comp.director;
-            document.getElementById('dashCompanyName').textContent = comp.name;
-
-            let totalKontrakAll = 0;
-            let totalLabaAll = 0;
-            let totalPiutangAll = 0;
-
-            appState.projects.forEach(p => {
-                const t = calculateProjectTotals(p);
-                totalKontrakAll += t.grandTotal;
-                totalLabaAll += t.profitEstimate;
-                totalPiutangAll += t.remaining;
-            });
-
-            document.getElementById('kpiTotalKontrak').textContent = formatRupiah(totalKontrakAll);
-            document.getElementById('kpiCountProject').textContent = `Dari ${appState.projects.length} Proyek Tercatat`;
-            document.getElementById('kpiLabaBersih').textContent = formatRupiah(totalLabaAll);
-            const marginEstPct = totalKontrakAll > 0 ? ((totalLabaAll / totalKontrakAll) * 100).toFixed(1) : 0;
-            document.getElementById('kpiMarginEst').textContent = `Est. Margin ~${marginEstPct}%`;
-            document.getElementById('kpiSisaPiutang').textContent = formatRupiah(totalPiutangAll);
-            document.getElementById('kpiTotalKlien').textContent = `${appState.customers.length} Klien`;
-
-            if (activeProj) {
-                const activeTotals = calculateProjectTotals(activeProj);
-                document.getElementById('projCardBadge').textContent = activeProj.category || 'FABRIKASI BESI';
-                document.getElementById('projCardNo').textContent = `No: ${activeProj.id}`;
-                document.getElementById('projCardTitle').textContent = activeProj.title;
-                document.getElementById('projCardAddress').textContent = activeProj.location;
-                document.getElementById('projCardCustomer').textContent = activeCust ? activeCust.name : '-';
-
-                document.getElementById('projSummaryTotal').textContent = formatRupiah(activeTotals.grandTotal);
-                document.getElementById('projSummaryPaid').textContent = formatRupiah(activeTotals.dpPaid);
-                document.getElementById('projSummaryRemaining').textContent = formatRupiah(activeTotals.remaining);
-            }
-
-            const tbody = document.getElementById('dashboardProjectTable');
-            if (tbody) {
-                tbody.innerHTML = appState.projects.map(p => {
-                    const cust = appState.customers.find(c => c.id === p.customerId) || { name: 'N/A' };
-                    const t = calculateProjectTotals(p);
-                    return `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="p-4 font-bold">
-                                <span class="font-mono text-xs text-amber-600 block">${p.id}</span>
-                                <span class="text-slate-800">${p.title}</span>
-                            </td>
-                            <td class="p-4 text-slate-600 font-medium">${cust.name}</td>
-                            <td class="p-4 font-bold text-slate-900 font-mono">${formatRupiah(t.grandTotal)}</td>
-                            <td class="p-4 font-semibold text-emerald-700 font-mono">${formatRupiah(t.dpPaid)}</td>
-                            <td class="p-4 font-semibold text-rose-600 font-mono">${formatRupiah(t.remaining)}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="switchActiveProject('${p.id}'); switchTab('proyek');" class="bg-slate-900 text-amber-400 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-slate-800 transition">
-                                    <i class="fa-solid fa-folder-open mr-1"></i> Buka Proyek
-                                </button>
-                                <button onclick="deleteProject('${p.id}')" class="text-rose-500 hover:text-rose-700 ml-2 text-xs" title="Hapus Proyek">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+        function promptEditDp() {
+            const p = getActiveProject();
+            if (!p) return;
+            const newDp = prompt("Masukkan jumlah DP / Pembayaran Masuk (Rp):", p.dpPaid || 0);
+            if (newDp !== null) {
+                p.dpPaid = Number(newDp) || 0;
+                saveStateToStorage();
+                renderDashboard();
+                showToast("Jumlah DP berhasil diperbarui!");
             }
         }
 
+        /* Render RAB Spreadsheet View */
         function renderRabTable() {
-            const proj = getActiveProject();
-            const cust = getActiveCustomer();
-            if (!proj) return;
+            const p = getActiveProject();
+            if (!p) return;
+            const cust = appState.customers.find(c => c.id === p.customerId) || { name: 'Umum' };
 
-            document.getElementById('rabContextId').textContent = proj.id;
-            document.getElementById('rabContextTitle').textContent = proj.title;
-            document.getElementById('rabContextCustomer').textContent = cust ? cust.name : '-';
-            document.getElementById('rabContextLocation').textContent = proj.location;
-
-            document.getElementById('rabPpnToggle').checked = proj.includePpn;
-            document.getElementById('rabPpnRateText').textContent = appState.company.ppnRate;
-            document.getElementById('rabPpnPercentLabel').textContent = appState.company.ppnRate;
+            document.getElementById('rabContextId').innerText = p.id;
+            document.getElementById('rabContextTitle').innerText = p.title;
+            document.getElementById('rabContextCustomer').innerText = cust.name;
+            document.getElementById('rabContextLocation').innerText = p.location;
+            document.getElementById('rabPpnToggle').checked = p.includePpn !== false;
+            document.getElementById('rabPpnRateText').innerText = appState.company.ppnRate || 11;
+            document.getElementById('rabPpnPercentLabel').innerText = appState.company.ppnRate || 11;
 
             const tbody = document.getElementById('rabTableBody');
-            if (tbody) {
-                tbody.innerHTML = proj.rabItems.map((item, index) => `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 text-center font-bold text-slate-500">${index + 1}</td>
-                        <td class="p-3">
-                            <input type="text" value="${item.item}" onchange="updateRabRow(${item.id}, 'item', this.value)" class="w-full bg-transparent font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500 rounded p-1">
-                        </td>
-                        <td class="p-3">
-                            <input type="text" value="${item.spec}" onchange="updateRabRow(${item.id}, 'spec', this.value)" class="w-full bg-transparent text-slate-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500 rounded p-1">
-                        </td>
-                        <td class="p-3 text-center">
-                            <input type="number" value="${item.qty}" onchange="updateRabRow(${item.id}, 'qty', this.value)" class="w-16 text-center font-bold bg-slate-100 focus:bg-white focus:outline-none border border-slate-300 rounded p-1">
-                        </td>
-                        <td class="p-3">
-                            <input type="text" value="${item.unit}" onchange="updateRabRow(${item.id}, 'unit', this.value)" class="w-16 bg-transparent text-center focus:bg-white border border-slate-300 rounded p-1">
-                        </td>
-                        <td class="p-3">
-                            <input type="number" value="${item.hppMat}" onchange="updateRabRow(${item.id}, 'hppMat', this.value)" class="w-28 font-mono bg-slate-50 focus:bg-white border border-slate-300 rounded p-1 text-right">
-                        </td>
-                        <td class="p-3">
-                            <input type="number" value="${item.labor}" onchange="updateRabRow(${item.id}, 'labor', this.value)" class="w-28 font-mono bg-slate-50 focus:bg-white border border-slate-300 rounded p-1 text-right">
-                        </td>
-                        <td class="p-3 text-right">
-                            <input type="number" value="${item.totalJual}" onchange="updateRabRow(${item.id}, 'totalJual', this.value)" class="w-32 font-bold font-mono text-amber-600 bg-amber-50 focus:bg-white border border-amber-300 rounded p-1 text-right">
-                        </td>
-                        <td class="p-3 text-center">
-                            <button onclick="deleteRabRow(${item.id})" class="text-rose-500 hover:text-rose-700">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
+            if (!tbody) return;
+            tbody.innerHTML = '';
 
-            const totals = calculateProjectTotals(proj);
-            document.getElementById('rabSubtotalText').textContent = formatRupiah(totals.subtotal);
-            document.getElementById('rabPpnText').textContent = formatRupiah(totals.ppn);
-            document.getElementById('rabGrandTotalText').textContent = formatRupiah(totals.grandTotal);
-            const profitPct = totals.subtotal > 0 ? ((totals.profitEstimate / totals.subtotal) * 100).toFixed(1) : 0;
-            document.getElementById('rabProfitEstimate').textContent = `Estimasi Profit Kotor: ${formatRupiah(totals.profitEstimate)} (~${profitPct}%)`;
-        }
-
-        function addRabRow() {
-            const proj = getActiveProject();
-            if (!proj) return;
-            const newId = Date.now();
-            proj.rabItems.push({
-                id: newId,
-                item: "Pekerjaan Konstruksi / Spesi Baru",
-                spec: "Besi Hollow / WF Spesifikasi Tambahan",
-                qty: 1,
-                unit: "m2",
-                hppMat: 100000,
-                labor: 50000,
-                totalJual: 180000
+            p.rabItems.forEach((item, index) => {
+                const totalJual = Number(item.totalJual) || ((Number(item.hppMat) + Number(item.labor)) * Number(item.qty));
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3"><input type="text" value="${item.item}" onchange="updateRabField(${item.id}, 'item', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-brand-accent focus:outline-none font-medium text-slate-800"></td>
+                    <td class="p-3"><input type="text" value="${item.spec || ''}" onchange="updateRabField(${item.id}, 'spec', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-brand-accent focus:outline-none text-slate-600"></td>
+                    <td class="p-3 text-center"><input type="number" value="${item.qty}" onchange="updateRabField(${item.id}, 'qty', this.value)" class="w-16 text-center bg-slate-50 border border-slate-200 rounded p-1 font-semibold"></td>
+                    <td class="p-3"><input type="text" value="${item.unit}" onchange="updateRabField(${item.id}, 'unit', this.value)" class="w-16 bg-slate-50 border border-slate-200 rounded p-1"></td>
+                    <td class="p-3"><input type="number" value="${item.hppMat}" onchange="updateRabField(${item.id}, 'hppMat', this.value)" class="w-28 bg-slate-50 border border-slate-200 rounded p-1 font-mono"></td>
+                    <td class="p-3"><input type="number" value="${item.labor}" onchange="updateRabField(${item.id}, 'labor', this.value)" class="w-28 bg-slate-50 border border-slate-200 rounded p-1 font-mono"></td>
+                    <td class="p-3 text-right font-mono font-bold text-slate-900">${formatRupiah(totalJual)}</td>
+                    <td class="p-3 text-center"><button onclick="deleteRabRow(${item.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
             });
-            saveStateToStorage();
-            renderRabTable();
-            showToast("Baris pekerjaan baru ditambahkan!");
-        }
 
-        function deleteRabRow(id) {
-            const proj = getActiveProject();
-            if (!proj) return;
-            proj.rabItems = proj.rabItems.filter(item => item.id !== id);
-            saveStateToStorage();
-            renderRabTable();
-        }
-
-        function updateRabRow(id, field, value) {
-            const proj = getActiveProject();
-            if (!proj) return;
-            const item = proj.rabItems.find(i => i.id === id);
-            if (!item) return;
-
-            if (field === 'qty' || field === 'hppMat' || field === 'labor' || field === 'totalJual') {
-                item[field] = Number(value) || 0;
-            } else {
-                item[field] = value;
-            }
-
-            if (field !== 'totalJual') {
-                const totalCost = (item.hppMat + item.labor) * item.qty;
-                item.totalJual = Math.round(totalCost * 1.25);
-            }
-
-            saveStateToStorage();
-            renderRabTable();
+            const t = calculateProjectTotals(p);
+            document.getElementById('rabSubtotalText').innerText = formatRupiah(t.subtotal);
+            document.getElementById('rabPpnText').innerText = formatRupiah(t.ppn);
+            document.getElementById('rabGrandTotalText').innerText = formatRupiah(t.grandTotal);
+            document.getElementById('rabProfitEstimate').innerText = `Estimasi Profit Kotor: ${formatRupiah(t.profit)} (${t.profitPct}%)`;
         }
 
         function toggleRABPpn() {
-            const proj = getActiveProject();
-            if (!proj) return;
-            proj.includePpn = document.getElementById('rabPpnToggle').checked;
+            const p = getActiveProject();
+            if (!p) return;
+            p.includePpn = document.getElementById('rabPpnToggle').checked;
             saveStateToStorage();
             renderRabTable();
         }
 
-        function renderCustomers() {
-            const query = (document.getElementById('searchCustomerInput').value || '').toLowerCase();
-            const filtered = appState.customers.filter(c => 
-                c.name.toLowerCase().includes(query) || 
-                c.address.toLowerCase().includes(query) ||
-                c.type.toLowerCase().includes(query)
-            );
+        function addRabRow() {
+            const p = getActiveProject();
+            if (!p) return;
+            const newId = p.rabItems.length > 0 ? Math.max(...p.rabItems.map(i => i.id)) + 1 : 1;
+            p.rabItems.push({
+                id: newId,
+                item: "Pekerjaan Baru Besi",
+                spec: "Spesifikasi Material...",
+                qty: 10,
+                unit: "m2",
+                hppMat: 150000,
+                labor: 50000,
+                totalJual: 2000000
+            });
+            saveStateToStorage();
+            renderRabTable();
+            showToast("Baris pekerjaan ditambahkan.");
+        }
 
+        function updateRabField(id, field, val) {
+            const p = getActiveProject();
+            if (!p) return;
+            const item = p.rabItems.find(i => i.id === id);
+            if (!item) return;
+
+            if (field === 'qty' || field === 'hppMat' || field === 'labor') {
+                item[field] = Number(val) || 0;
+                item.totalJual = (Number(item.hppMat) + Number(item.labor)) * Number(item.qty);
+            } else {
+                item[field] = val;
+            }
+
+            saveStateToStorage();
+            renderRabTable();
+        }
+
+        function deleteRabRow(id) {
+            const p = getActiveProject();
+            if (!p) return;
+            p.rabItems = p.rabItems.filter(i => i.id !== id);
+            saveStateToStorage();
+            renderRabTable();
+            showToast("Baris pekerjaan dihapus.");
+        }
+
+        /* Master Customers */
+        function renderCustomers() {
             const tbody = document.getElementById('customerTableBody');
             if (!tbody) return;
+            tbody.innerHTML = '';
 
-            tbody.innerHTML = filtered.map(c => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-4 font-mono font-bold text-amber-600">${c.id}</td>
-                    <td class="p-4 font-bold text-slate-800">${c.name}</td>
-                    <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded font-semibold text-[11px]">${c.type}</span></td>
-                    <td class="p-4">${c.phone}<br><span class="text-slate-400 text-[11px]">${c.email || '-'}</span></td>
-                    <td class="p-4 text-slate-600">${c.address}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="deleteCustomer('${c.id}')" class="text-rose-500 hover:text-rose-700 text-xs">
-                            <i class="fa-solid fa-trash"></i> Hapus
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            const query = (document.getElementById('searchCustomerInput')?.value || '').toLowerCase();
+            const filtered = appState.customers.filter(c => c.name.toLowerCase().includes(query) || c.address.toLowerCase().includes(query));
+
+            filtered.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-slate-800">${c.id}</td>
+                    <td class="p-4 font-semibold text-slate-900">${c.name}</td>
+                    <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-semibold text-[11px]">${c.type}</span></td>
+                    <td class="p-4 text-slate-600">${c.phone}<br><span class="text-xs text-slate-400">${c.email || '-'}</span></td>
+                    <td class="p-4 text-slate-600 max-w-xs">${c.address}</td>
+                    <td class="p-4 text-center"><button onclick="deleteCustomer('${c.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function openAddCustomerModal() {
@@ -1564,55 +1505,54 @@
             document.getElementById('customerModal').classList.add('hidden');
         }
 
-        function handleSaveCustomer(e) {
-            e.preventDefault();
-            const newCust = {
-                id: `CUST-00${appState.customers.length + 1}`,
+        function handleSaveCustomer(event) {
+            if (event) event.preventDefault();
+            const newId = "CUST-" + String(appState.customers.length + 1).padStart(3, '0');
+            appState.customers.push({
+                id: newId,
                 name: document.getElementById('custName').value,
                 type: document.getElementById('custType').value,
                 phone: document.getElementById('custPhone').value,
                 email: document.getElementById('custEmail').value,
                 address: document.getElementById('custAddress').value
-            };
-            appState.customers.push(newCust);
+            });
             saveStateToStorage();
             closeCustomerModal();
             renderCustomers();
-            renderActiveProjectSelector();
-            showToast("Customer berhasil ditambahkan!");
+            showToast("Customer baru berhasil disimpan!");
         }
 
         function deleteCustomer(id) {
-            appState.customers = appState.customers.filter(c => c.id !== id);
-            saveStateToStorage();
-            renderCustomers();
-            showToast("Customer berhasil dihapus");
+            if (confirm("Hapus customer ini?")) {
+                appState.customers = appState.customers.filter(c => c.id !== id);
+                saveStateToStorage();
+                renderCustomers();
+                showToast("Customer dihapus.");
+            }
         }
 
+        /* Master Materials */
         function renderMaterials() {
-            const query = (document.getElementById('searchMaterialInput').value || '').toLowerCase();
-            const filtered = appState.materials.filter(m => 
-                m.name.toLowerCase().includes(query) || 
-                m.category.toLowerCase().includes(query)
-            );
-
             const tbody = document.getElementById('materialTableBody');
             if (!tbody) return;
+            tbody.innerHTML = '';
 
-            tbody.innerHTML = filtered.map(m => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-4 font-mono font-bold text-amber-600">${m.id}</td>
-                    <td class="p-4 font-bold text-slate-800">${m.name}</td>
-                    <td class="p-4"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold text-[11px]">${m.category}</span></td>
-                    <td class="p-4 font-medium">${m.unit}</td>
-                    <td class="p-4 font-bold font-mono text-slate-900">${formatRupiah(m.price)}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="deleteMaterial('${m.id}')" class="text-rose-500 hover:text-rose-700 text-xs">
-                            <i class="fa-solid fa-trash"></i> Hapus
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            const query = (document.getElementById('searchMaterialInput')?.value || '').toLowerCase();
+            const filtered = appState.materials.filter(m => m.name.toLowerCase().includes(query) || m.category.toLowerCase().includes(query));
+
+            filtered.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-slate-800">${m.id}</td>
+                    <td class="p-4 font-semibold text-slate-900">${m.name}</td>
+                    <td class="p-4"><span class="bg-amber-50 text-amber-800 px-2.5 py-1 rounded-full font-semibold text-[11px]">${m.category}</span></td>
+                    <td class="p-4 text-slate-600">${m.unit}</td>
+                    <td class="p-4 font-mono font-bold text-emerald-600">${formatRupiah(m.price)}</td>
+                    <td class="p-4 text-center"><button onclick="deleteMaterial('${m.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function openAddMaterialModal() {
@@ -1623,130 +1563,91 @@
             document.getElementById('materialModal').classList.add('hidden');
         }
 
-        function handleSaveMaterial(e) {
-            e.preventDefault();
-            const newMat = {
-                id: `MAT-00${appState.materials.length + 1}`,
+        function handleSaveMaterial(event) {
+            if (event) event.preventDefault();
+            const newId = "MAT-" + String(appState.materials.length + 1).padStart(3, '0');
+            appState.materials.push({
+                id: newId,
                 name: document.getElementById('matName').value,
                 category: document.getElementById('matCategory').value,
                 unit: document.getElementById('matUnit').value,
                 price: Number(document.getElementById('matPrice').value) || 0
-            };
-            appState.materials.push(newMat);
+            });
             saveStateToStorage();
             closeMaterialModal();
             renderMaterials();
-            showToast("Material berhasil ditambahkan!");
+            showToast("Material ditambahkan ke katalog!");
         }
 
         function deleteMaterial(id) {
             appState.materials = appState.materials.filter(m => m.id !== id);
             saveStateToStorage();
             renderMaterials();
-            showToast("Material berhasil dihapus");
+            showToast("Material dihapus dari katalog.");
         }
 
+        /* Project Creation Modal */
         function openNewProjectModal() {
+            const sel = document.getElementById('newProjCustomer');
+            sel.innerHTML = '';
+            appState.customers.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = `${c.name} (${c.type})`;
+                sel.appendChild(opt);
+            });
+            document.getElementById('newProjDate').valueAsDate = new Date();
             document.getElementById('projectModal').classList.remove('hidden');
-            renderActiveProjectSelector();
         }
 
         function closeProjectModal() {
             document.getElementById('projectModal').classList.add('hidden');
         }
 
-        function handleSaveProject(e) {
-            e.preventDefault();
-            const projId = `PRJ/00${appState.projects.length + 1}/IX/2026`;
+        function handleSaveProject(event) {
+            if (event) event.preventDefault();
+            const custId = document.getElementById('newProjCustomer').value;
+            const title = document.getElementById('newProjTitle').value;
+            const cat = document.getElementById('newProjCategory').value;
+            const loc = document.getElementById('newProjLocation').value;
+            const date = document.getElementById('newProjDate').value;
+
+            const newProjId = `PRJ/${String(appState.projects.length + 1).padStart(3, '0')}/IX/2026`;
             const newProj = {
-                id: projId,
-                customerId: document.getElementById('newProjCustomer').value,
-                title: document.getElementById('newProjTitle').value,
-                category: document.getElementById('newProjCategory').value,
-                location: document.getElementById('newProjLocation').value,
-                date: document.getElementById('newProjDate').value || new Date().toISOString().split('T')[0],
+                id: newProjId,
+                customerId: custId,
+                title: title,
+                category: cat,
+                location: loc,
+                date: date,
                 includePpn: true,
                 dpPaid: 0,
-                customInvoiceTotal: null,
+                spkNotes: "Kerjakan sesuai spesifikasi dan standar keselamatan kerja workshop.",
                 rabItems: [
-                    { id: Date.now(), item: "Fabrikasi Konstruksi Besi Main Frame", spec: "Spesifikasi Besi Hollow / WF", qty: 10, unit: "m2", hppMat: 150000, labor: 75000, totalJual: 2800000 }
+                    { id: 1, item: title, spec: "Spesifikasi Standar Fabrikasi Besi", qty: 10, unit: "m2", hppMat: 150000, labor: 50000, totalJual: 2000000 }
                 ],
                 contractClauses: [
-                    "PIHAK KEDUA (Penerima Kerja) berkewajiban melaksanakan pekerjaan fabrikasi & pemasangan konstruksi besi sesuai rincian tabel RAB yang telah disepakati.",
-                    "PIHAK PERTAMA (Pemberi Kerja) wajib melakukan pembayaran Down Payment (DP) sebesar 50% saat penandatanganan akad perjanjian kerja ini.",
-                    "Pelunasan sisa pembayaran 50% wajib dibayarkan PIHAK PERTAMA (Pemberi Kerja) maksimal 3 hari setelah Berita Acara Serah Terima (BAST) ditandatangani.",
-                    "Garansi struktur fabrikasi dan kebocoran atap berlaku selama 3 (tiga) bulan terhitung sejak serah terima pekerjaan."
-                ],
-                spkNotes: "Pekerjaan fabrikasi wajib diselesaikan sesuai tenggat waktu yang ditentukan."
+                    "PIHAK KEDUA (Penerima Kerja) berkewajiban melaksanakan pekerjaan fabrikasi & pemasangan konstruksi besi sesuai rincian tabel RAB.",
+                    "PIHAK PERTAMA (Pemberi Kerja) wajib membayar DP 50% saat penandatanganan kontrak kerja.",
+                    "Pelunasan sisa tagihan dibayar maksimal 3 hari setelah Berita Acara Serah Terima (BAST) disetujui bersama.",
+                    "Garansi struktur fabrikasi berlaku selama 3 (tiga) bulan terhitung sejak serah terima."
+                ]
             };
+
             appState.projects.push(newProj);
-            appState.activeProjectId = projId;
+            appState.activeProjectId = newProjId;
             saveStateToStorage();
             closeProjectModal();
-            renderActiveProjectSelector();
             renderDashboard();
-            renderRabTable();
-            showToast("Proyek baru berhasil dibuat!");
+            switchTab('rab');
+            showToast("Proyek baru berhasil dibuat! Silakan kelola RAB.");
         }
 
-        function deleteProject(id) {
-            if (appState.projects.length <= 1) {
-                showToast("Tidak dapat menghapus proyek terakhir!");
-                return;
-            }
-            appState.projects = appState.projects.filter(p => p.id !== id);
-            appState.activeProjectId = appState.projects[0].id;
-            saveStateToStorage();
-            renderActiveProjectSelector();
-            renderDashboard();
-            renderRabTable();
-            showToast("Proyek berhasil dihapus");
-        }
-
-        function handleImageUpload(input, type) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const dataUrl = e.target.result;
-                    if (type === 'logo') {
-                        appState.company.logoUrl = dataUrl;
-                        document.getElementById('logoPreview').src = dataUrl;
-                        document.getElementById('logoPreview').classList.remove('hidden');
-                        document.getElementById('logoIcon').classList.add('hidden');
-                    } else if (type === 'signature') {
-                        appState.company.signatureUrl = dataUrl;
-                        document.getElementById('signaturePreview').src = dataUrl;
-                        document.getElementById('signaturePreview').classList.remove('hidden');
-                        document.getElementById('signatureIcon').classList.add('hidden');
-                    } else if (type === 'stamp') {
-                        appState.company.stampUrl = dataUrl;
-                        document.getElementById('stampPreview').src = dataUrl;
-                        document.getElementById('stampPreview').classList.remove('hidden');
-                        document.getElementById('stampIcon').classList.add('hidden');
-                    }
-                    saveStateToStorage();
-                    showToast("Gambar berhasil di-upload!");
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toastMessage');
-            const toastText = document.getElementById('toastText');
-            if (!toast || !toastText) return;
-
-            toastText.textContent = msg;
-            toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
-            setTimeout(() => {
-                toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
-            }, 3000);
-        }
-
+        /* Document Modal & Rendering Engine */
         function openDocumentModal(type) {
             currentDocumentType = type;
             document.getElementById('documentModal').classList.remove('hidden');
-            switchDocType(type);
+            renderDocumentPreview(type);
         }
 
         function closeDocumentModal() {
@@ -1755,632 +1656,427 @@
 
         function switchDocType(type) {
             currentDocumentType = type;
-            const proj = getActiveProject();
-            const cust = getActiveCustomer();
-            const comp = appState.company;
-
             document.querySelectorAll('[id^="docTab-"]').forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-bold');
-                btn.classList.add('text-slate-300');
+                btn.className = "px-3 py-1.5 rounded-md text-slate-300 hover:text-white";
             });
             const activeTab = document.getElementById(`docTab-${type}`);
-            if (activeTab) {
-                activeTab.classList.add('bg-amber-500', 'text-slate-950', 'font-bold');
-                activeTab.classList.remove('text-slate-300');
-            }
+            if (activeTab) activeTab.className = "px-3 py-1.5 rounded-md bg-amber-500 text-slate-950 font-bold";
+            renderDocumentPreview(type);
+        }
 
-            const categoryTag = document.getElementById('docModalCategoryTag');
-            const docTitle = document.getElementById('docModalTitle');
-            const mainContent = document.getElementById('docMainContent');
-            const printableArea = document.getElementById('printableArea');
+        function renderDocumentPreview(type) {
+            const p = getActiveProject();
+            if (!p) return;
+            const cust = appState.customers.find(c => c.id === p.customerId) || { name: 'Umum', phone: '-', address: '-' };
+            const comp = appState.company;
+            const t = calculateProjectTotals(p);
 
-            if (type === 'kwitansi' || type === 'invoice') {
-                printableArea.classList.add('sheet-half-a4');
-                printableArea.classList.remove('sheet-full-a4');
-            } else {
-                printableArea.classList.remove('sheet-half-a4');
-                printableArea.classList.add('sheet-full-a4');
-            }
+            document.getElementById('docBrandTitle').innerText = comp.name;
+            document.getElementById('docCompanyTagline').innerText = comp.tagline;
+            document.getElementById('docCompanyAddr').innerText = comp.address;
+            document.getElementById('docCompanyContact').innerText = `Telp/WA: ${comp.phone} | Email: ${comp.email}`;
+            document.getElementById('docMetaDate').innerText = `Tanggal: ${p.date || '16 September 2026'}`;
 
-            document.getElementById('docBrandTitle').textContent = comp.name;
-            document.getElementById('docCompanyTagline').textContent = comp.tagline;
-            document.getElementById('docCompanyAddr').textContent = comp.address;
-            document.getElementById('docCompanyContact').textContent = `Telp/WA: ${comp.phone} | Email: ${comp.email}`;
-
-            const docLogoImg = document.getElementById('docLogoImg');
+            const logoImg = document.getElementById('docLogoImg');
             if (comp.logoUrl) {
-                docLogoImg.src = comp.logoUrl;
-                docLogoImg.classList.remove('hidden');
+                logoImg.src = comp.logoUrl;
+                logoImg.classList.remove('hidden');
             } else {
-                docLogoImg.classList.add('hidden');
+                logoImg.classList.add('hidden');
             }
 
-            const docSignatureImg = document.getElementById('docSignatureImg');
-            if (comp.signatureUrl) {
-                docSignatureImg.src = comp.signatureUrl;
-                docSignatureImg.classList.remove('hidden');
-            } else {
-                docSignatureImg.classList.add('hidden');
-            }
+            const container = document.getElementById('docMainContent');
+            const titleEl = document.getElementById('docModalTitle');
+            const tagEl = document.getElementById('docModalCategoryTag');
 
-            const docStampImg = document.getElementById('docStampImg');
-            if (comp.stampUrl && comp.showStamp) {
-                docStampImg.src = comp.stampUrl;
-                docStampImg.classList.remove('hidden');
-            } else {
-                docStampImg.classList.add('hidden');
-            }
+            let html = '';
 
-            document.getElementById('sigNamePihak1').textContent = cust ? cust.name : '-';
-            document.getElementById('sigNamePihak2').textContent = comp.director;
-            document.getElementById('sigTitlePihak2').textContent = `${comp.directorTitle} (Penerima Kerja)`;
+            if (type === 'rab') {
+                tagEl.innerText = "PENAWARAN HARGA";
+                titleEl.innerText = "Quotation / RAB Steel Fabrication";
+                document.getElementById('docMetaNumber').innerText = `NO: QUO/${p.id}`;
 
-            document.getElementById('docMetaNumber').textContent = `NO: ${proj ? proj.id : 'PRJ/001'}`;
-            document.getElementById('docMetaDate').textContent = `Tanggal: ${proj && proj.date ? new Date(proj.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
-
-            if (type === 'kontrak') {
-                categoryTag.textContent = "KONTRAK LEGAL";
-                docTitle.textContent = "Surat Perjanjian Kerja (Kontrak)";
-                mainContent.innerHTML = generateKontrakHTML(proj, cust);
-            } else if (type === 'spk') {
-                categoryTag.textContent = "SPK PRODUKSI";
-                docTitle.textContent = "Surat Perintah Kerja Fabricator";
-                mainContent.innerHTML = generateSpkHTML(proj, cust);
-            } else if (type === 'invoice') {
-                categoryTag.textContent = "INVOICE TAGIHAN";
-                docTitle.textContent = "Invoice Tagihan Pembayaran";
-                mainContent.innerHTML = generateInvoiceHTML(proj, cust);
-            } else if (type === 'kwitansi') {
-                categoryTag.textContent = "KWITANSI RESMI";
-                docTitle.textContent = "Kwitansi Bukti Pembayaran";
-                mainContent.innerHTML = generateKwitansiHTML(proj, cust);
-            } else if (type === 'bast') {
-                categoryTag.textContent = "BAST LEGAL";
-                docTitle.textContent = "Berita Acara Serah Terima Pekerjaan";
-                mainContent.innerHTML = generateBastHTML(proj, cust);
-            } else if (type === 'rab') {
-                categoryTag.textContent = "PENAWARAN / RAB";
-                docTitle.textContent = "Rincian Anggaran Biaya & Quotation";
-                mainContent.innerHTML = generateRabQuotationHTML(proj, cust);
-            }
-        }
-
-        function generateKontrakHTML(proj, cust) {
-            const comp = appState.company;
-            const totals = calculateProjectTotals(proj);
-
-            let clausesHTML = (proj.contractClauses || []).map((clause, idx) => `
-                <div class="flex justify-between items-start space-x-2 group">
-                    <p contenteditable="true" onblur="saveDocEdit('clause', ${idx}, this.innerText)" class="flex-1 p-1 rounded hover:bg-amber-50/50">
-                        ${idx + 1}. ${clause}
-                    </p>
-                    <button onclick="removeClause(${idx})" class="text-rose-500 opacity-0 group-hover:opacity-100 transition text-xs no-print">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `).join('');
-
-            let rabTableHTML = proj.rabItems.map((item, idx) => `
-                <tr class="border-b border-slate-200">
-                    <td class="p-2 text-center font-bold">${idx + 1}</td>
-                    <td class="p-2 font-bold">${item.item}</td>
-                    <td class="p-2 text-slate-600">${item.spec}</td>
-                    <td class="p-2 text-center">${item.qty} ${item.unit}</td>
-                    <td class="p-2 text-right font-mono font-bold">${formatRupiah(item.totalJual)}</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="text-center space-y-1 my-3">
-                    <h2 class="text-sm font-extrabold uppercase tracking-wider underline">SURAT PERJANJIAN KERJA </h2>
-                    <p class="text-[11px] font-mono">Nomor: SPK-KTR/${proj.id}</p>
-                </div>
-
-                <p class="text-justify leading-relaxed">
-                    Pada hari ini, disepakati Perjanjian Kerja Konstruksi Besi & Fabrikasi antara Pihak-Pihak berikut:
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px]">
-                    <div>
-                        <h4 class="font-bold underline text-slate-800 uppercase">PIHAK PERTAMA (Pemberi Kerja):</h4>
-                        <p><strong>Nama:</strong> ${cust.name}</p>
-                        <p><strong>Kategori:</strong> ${cust.type}</p>
-                        <p><strong>Alamat:</strong> ${cust.address}</p>
-                        <p><strong>Kontak:</strong> ${cust.phone}</p>
-                    </div>
-
-
-
-                    
-                    <div>
-                        <h4 class="font-bold underline text-slate-800 uppercase">PIHAK KEDUA (Penerima Kerja):</h4>
-                        <p><strong>Perusahaan:</strong> ${comp.name}</p>
-                        <p><strong>Pimpinan:</strong> ${comp.director} (${comp.directorTitle})</p>
-                        <p><strong>Alamat:</strong> ${comp.address}</p>
-                        <p><strong>Legalitas NIB:</strong> ${comp.nib}</p>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="font-bold underline uppercase text-[11px]">PASAL 1: RINCIAN SPESIFIKASI PEKERJAAN & BIAYA (RAB)</h3>
-                    <table class="w-full text-left text-[11px] border-collapse border border-slate-300">
-                        <thead class="bg-slate-100 font-bold text-slate-700">
-                            <tr>
-                                <th class="p-2 border border-slate-300 text-center w-8">NO</th>
-                                <th class="p-2 border border-slate-300">ITEM PEKERJAAN</th>
-                                <th class="p-2 border border-slate-300">SPESIFIKASI MATERIAL</th>
-                                <th class="p-2 border border-slate-300 text-center w-20">QTY</th>
-                                <th class="p-2 border border-slate-300 text-right w-32">TOTAL JUAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rabTableHTML}</tbody>
-                    </table>
-                    <div class="flex justify-end pt-1">
-                        <div class="text-right text-xs">
-                            <p>Total Nilai Pekerjaan (termasuk PPN): <strong class="text-amber-600 font-mono text-sm">${formatRupiah(totals.grandTotal)}</strong></p>
-                            <p class="italic text-[10px] text-slate-500">Terbilang: ${terbilangRupiah(totals.grandTotal)}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-2 pt-2">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold underline uppercase text-[11px]">PASAL 2: KLAUSUL & SYARAT PERJANJIAN KERJA</h3>
-                        <button onclick="addNewClause()" class="text-[10px] bg-slate-900 text-amber-400 font-bold px-2 py-0.5 rounded no-print">
-                            <i class="fa-solid fa-plus mr-1"></i> Tambah Pasal
-                        </button>
-                    </div>
-                    <div class="space-y-1 text-slate-800 text-justify">
-                        ${clausesHTML}
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateSpkHTML(proj, cust) {
-            const comp = appState.company;
-
-            let spkItems = proj.rabItems.map((item, idx) => `
-                <tr class="border-b border-slate-200">
-                    <td class="p-2 text-center font-bold">${idx + 1}</td>
-                    <td class="p-2 font-bold">${item.item}</td>
-                    <td class="p-2 text-slate-600">${item.spec}</td>
-                    <td class="p-2 text-center font-bold">${item.qty} ${item.unit}</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="text-center space-y-1 my-3">
-                    <h2 class="text-sm font-extrabold uppercase tracking-wider underline">SURAT PERINTAH KERJA (SPK PRODUKSI WORKSHOP)</h2>
-                    <p class="text-[11px] font-mono">Nomor: SPK-PRD/${proj.id}</p>
-                </div>
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] grid grid-cols-2 gap-4">
-                    <div>
-                        <p><strong>Pemberi Perintah:</strong> ${comp.director} (${comp.name})</p>
-                        <p><strong>Pekerjaan Proyek:</strong> ${proj.title}</p>
-                    </div>
-                    <div>
-                        <p><strong>Pemberi Kerja / Klien:</strong> ${cust.name}</p>
-                        <p><strong>Lokasi Pemasangan:</strong> ${proj.location}</p>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="font-bold underline uppercase text-[11px]">DAFTAR ITEM FABRIKASI WORSKHOP</h3>
-                    <table class="w-full text-left text-[11px] border-collapse border border-slate-300">
-                        <thead class="bg-slate-100 font-bold text-slate-700">
-                            <tr>
-                                <th class="p-2 border border-slate-300 text-center w-8">NO</th>
-                                <th class="p-2 border border-slate-300">ITEM PEKERJAAN</th>
-                                <th class="p-2 border border-slate-300">SPESIFIKASI FABRIKASI</th>
-                                <th class="p-2 border border-slate-300 text-center w-24">TARGET QTY</th>
-                            </tr>
-                        </thead>
-                        <tbody>${spkItems}</tbody>
-                    </table>
-                </div>
-
-                <div class="space-y-2 pt-2">
-                    <h3 class="font-bold underline uppercase text-[11px]">INSTRUKSI WORKSHOP & CATATAN KHUSUS</h3>
-                    <div contenteditable="true" onblur="saveDocEdit('spkNotes', 0, this.innerText)" class="p-3 bg-amber-50/40 border border-amber-300 rounded-lg text-slate-800 hover:bg-amber-50">
-                        ${proj.spkNotes || 'Pekerjaan fabrikasi wajib selesai tepat waktu. Gunakan alat pelindung diri (APD) dan pastikan pengelasan full penetrasi.'}
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateInvoiceHTML(proj, cust) {
-            const comp = appState.company;
-            const totals = calculateProjectTotals(proj);
-
-            return `
-                <div class="text-center space-y-1 my-1">
-                    <h2 class="text-sm font-extrabold uppercase tracking-wider underline">INVOICE TAGIHAN PEMBAYARAN</h2>
-                    <p class="text-[11px] font-mono">Nomor: INV/${proj.id}</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px]">
-                    <div>
-                        <p class="font-bold text-slate-500 uppercase">Ditujukan Kepada (Pemberi Kerja):</p>
-                        <p class="font-bold text-slate-900">${cust.name}</p>
-                        <p class="text-slate-600">${cust.address}</p>
-                        <p class="text-slate-600">Telp: ${cust.phone}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-slate-500 uppercase">Rekening Pembayaran Official:</p>
-                        <p class="font-bold text-emerald-700">${comp.bankName}</p>
-                        <p class="font-mono font-bold text-slate-900 text-xs">${comp.bankAccNo}</p>
-                        <p class="text-slate-600">a.n ${comp.bankAccName}</p>
-                    </div>
-                </div>
-
-                <table class="w-full text-left text-[11px] border-collapse border border-slate-300 my-2">
-                    <thead class="bg-slate-100 font-bold text-slate-700">
-                        <tr>
-                            <th class="p-2 border border-slate-300">DESKRIPSI TAGIHAN</th>
-                            <th class="p-2 border border-slate-300 text-right w-36">JUMLAH (RP)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                let rows = '';
+                p.rabItems.forEach((item, idx) => {
+                    const totalJual = Number(item.totalJual) || ((Number(item.hppMat) + Number(item.labor)) * Number(item.qty));
+                    rows += `
                         <tr class="border-b border-slate-200">
-                            <td class="p-2">
-                                <span class="font-bold block">${proj.title}</span>
-                                <span class="text-slate-500 text-[10px]">Lokasi: ${proj.location}</span>
-                            </td>
-                            <td class="p-2 text-right font-bold font-mono">${formatRupiah(totals.subtotal)}</td>
+                            <td class="p-2.5 text-center">${idx + 1}</td>
+                            <td class="p-2.5 font-medium">${item.item}<br><span class="text-[10px] text-slate-500">${item.spec || ''}</span></td>
+                            <td class="p-2.5 text-center">${item.qty} ${item.unit}</td>
+                            <td class="p-2.5 text-right">${formatRupiah(totalJual / item.qty)}</td>
+                            <td class="p-2.5 text-right font-bold">${formatRupiah(totalJual)}</td>
                         </tr>
-                        <tr class="border-b border-slate-200">
-                            <td class="p-2">PPN (${comp.ppnRate}%)</td>
-                            <td class="p-2 text-right font-mono">${formatRupiah(totals.ppn)}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-300 space-y-2 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-slate-700">Custom Override Total Pekerjaan (Opsional):</span>
-                        <input type="number" value="${proj.customInvoiceTotal !== null ? proj.customInvoiceTotal : ''}" onchange="updateCustomInvoiceTotal(this.value)" placeholder="Default dari RAB" class="w-36 p-1 text-right font-bold border border-amber-400 rounded bg-white">
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-slate-700">Pembayaran DP / Termasuk Masuk:</span>
-                        <input type="number" value="${proj.dpPaid}" onchange="updateProjectDp(this.value)" class="w-36 p-1 text-right font-bold border border-amber-400 rounded bg-white text-emerald-700">
-                    </div>
-                    <div class="flex justify-between items-center pt-1 border-t border-amber-300 text-sm font-extrabold">
-                        <span class="text-rose-700">SISA TAGIHAN PELUNASAN:</span>
-                        <span class="text-rose-700 font-mono">${formatRupiah(totals.remaining)}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function syncDataToGas() {
-            showToast("Menghubungkan ke GAS backend...");
-        }
-
-        async function fetchDataFromGas() {
-            showToast("Mengambil data dari cloud...");
-        }
-
-        async function syncDataToGasBackground() {
-            const url = appState.gasUrl || DEFAULT_GAS_URL;
-            if (!url) return;
-
-            try {
-                await fetch(url, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: 'saveAll',
-                        data: appState
-                    })
+                    `;
                 });
-            } catch (err) {
-                console.warn("Background GAS sync skipped:", err);
+
+                html = `
+                    <div class="space-y-3">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 grid grid-cols-2 gap-2 text-xs">
+                            <div><strong>KEPADA (PEMBERI KERJA):</strong><br>${cust.name}<br>${cust.address}<br>Telp: ${cust.phone}</div>
+                            <div class="text-right"><strong>PERIHAL:</strong> Penawaran Harga Pekerjaan<br><strong>PROYEK:</strong> ${p.title}</div>
+                        </div>
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-900 text-white uppercase text-[10px]">
+                                    <th class="p-2.5 w-10 text-center">NO</th>
+                                    <th class="p-2.5">URAIAN PEKERJAAN & SPESIFIKASI</th>
+                                    <th class="p-2.5 text-center">VOLUME</th>
+                                    <th class="p-2.5 text-right">HARGA SATUAN</th>
+                                    <th class="p-2.5 text-right">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                        <div class="flex justify-end pt-2">
+                            <div class="w-72 space-y-1 text-xs">
+                                <div class="flex justify-between"><span>Subtotal:</span><strong>${formatRupiah(t.subtotal)}</strong></div>
+                                <div class="flex justify-between"><span>PPN (${appState.company.ppnRate}%):</span><strong>${formatRupiah(t.ppn)}</strong></div>
+                                <div class="flex justify-between text-sm font-extrabold border-t pt-1 text-amber-600"><span>Grand Total:</span><span>${formatRupiah(t.grandTotal)}</span></div>
+                            </div>
+                        </div>
+                        ${renderSignaturesSideBySideHTML(comp, cust)}
+                    </div>
+                `;
+            } else if (type === 'kontrak') {
+                tagEl.innerText = "SURAT PERJANJIAN";
+                titleEl.innerText = "Surat Perjanjian Kerja (Kontrak)";
+                document.getElementById('docMetaNumber').innerText = `NOMOR: KTR/${p.id}`;
+
+                let clausesHtml = '';
+                p.contractClauses.forEach((clause, idx) => {
+                    clausesHtml += `
+                        <div class="flex items-start space-x-2 group">
+                            <span class="font-bold text-slate-800 min-w-[24px]">Pasal ${idx + 1}.</span>
+                            <div contenteditable="true" onblur="updateClauseText(${idx}, this.innerText)" class="flex-1 bg-slate-50/50 p-1 rounded border border-transparent hover:border-amber-400 focus:bg-white">${clause}</div>
+                            <button onclick="removeClause(${idx})" class="text-rose-500 opacity-0 group-hover:opacity-100 transition no-print"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+
+                let rabSummaryRows = '';
+                p.rabItems.forEach((item, idx) => {
+                    const totalJual = Number(item.totalJual) || ((Number(item.hppMat) + Number(item.labor)) * Number(item.qty));
+                    rabSummaryRows += `
+                        <tr class="border-b border-slate-200">
+                            <td class="p-2 text-center">${idx + 1}</td>
+                            <td class="p-2">${item.item} (${item.spec || ''})</td>
+                            <td class="p-2 text-center">${item.qty} ${item.unit}</td>
+                            <td class="p-2 text-right">${formatRupiah(totalJual)}</td>
+                        </tr>
+                    `;
+                });
+
+                html = `
+                    <div class="space-y-4 text-xs">
+                        <div class="text-center font-bold uppercase tracking-wide text-sm border-b pb-2">
+                            SURAT PERJANJIAN KERJA (KONTRAK)<br>
+                            <span class="text-xs font-normal text-slate-600">Tentang Pekerjaan ${p.title}</span>
+                        </div>
+                        <p>Pada hari ini tanggal <strong>${p.date || '16 September 2026'}</strong>, bertempat di ${comp.city}, telah dibuat dan ditandatangani perjanjian antara:</p>
+                        <div class="pl-4 space-y-1 bg-slate-50 p-3 rounded-lg border">
+                            <p><strong>1. PIHAK PERTAMA (Pemberi Kerja):</strong> ${cust.name}, beralamat di ${cust.address}, No. Telp: ${cust.phone}.</p>
+                            <p><strong>2. PIHAK KEDUA (Penerima Kerja):</strong> ${comp.name} (${comp.brand}), dipimpin oleh ${comp.director} selaku Direktur Utama, beralamat di ${comp.address}.</p>
+                        </div>
+                        <p class="font-semibold text-slate-800">Kedua belah pihak sepakat mengadakan ikatan kerja dengan ketentuan pasal-pasal berikut:</p>
+                        
+                        <div class="space-y-2">
+                            <div class="font-bold text-slate-900">Pasal 1 (Lingkup Pekerjaan & Rincian RAB)</div>
+                            <p>Pihak Kedua sepakat melaksanakan pekerjaan fabrikasi dengan rincian sebagai berikut:</p>
+                            <table class="w-full text-left border-collapse text-[11px] my-2">
+                                <thead>
+                                    <tr class="bg-slate-200 uppercase">
+                                        <th class="p-2">No</th>
+                                        <th class="p-2">Item Pekerjaan</th>
+                                        <th class="p-2 text-center">Volume</th>
+                                        <th class="p-2 text-right">Total Jual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rabSummaryRows}</tbody>
+                            </table>
+                            <div class="text-right font-bold text-slate-900">Total Nilai Kontrak: ${formatRupiah(t.grandTotal)}</div>
+                        </div>
+
+                        <div class="space-y-2 pt-2">
+                            <div class="font-bold text-slate-900">Pasal 2 (Pasal-Pasal Perjanjian)</div>
+                            ${clausesHtml}
+                            <button onclick="addNewClause()" class="text-xs bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg no-print mt-2"><i class="fa-solid fa-plus mr-1"></i> Tambah Pasal Kontrak</button>
+                        </div>
+                        
+                        ${renderSignaturesSideBySideHTML(comp, cust)}
+                    </div>
+                `;
+            } else if (type === 'spk') {
+                tagEl.innerText = "SPK PRODUKSI";
+                titleEl.innerText = "Surat Perintah Kerja (SPK Workshop)";
+                document.getElementById('docMetaNumber').innerText = `NOMOR: SPK/${p.id}`;
+
+                let spkRows = '';
+                p.rabItems.forEach((item, idx) => {
+                    spkRows += `
+                        <tr class="border-b border-slate-200">
+                            <td class="p-2 text-center">${idx + 1}</td>
+                            <td class="p-2 font-medium">${item.item}</td>
+                            <td class="p-2">${item.spec || '-'}</td>
+                            <td class="p-2 text-center font-bold">${item.qty} ${item.unit}</td>
+                        </tr>
+                    `;
+                });
+
+                html = `
+                    <div class="space-y-4 text-xs">
+                        <div class="text-center font-bold uppercase tracking-wide text-sm border-b pb-2">
+                            SURAT PERINTAH KERJA (SPK) PRODUKSI<br>
+                            <span class="text-xs font-normal text-slate-600">Tim Workshop & Lapangan Fabrikasi Besi</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border">
+                            <div><strong>PROYEK:</strong> ${p.title}<br><strong>LOKASI:</strong> ${p.location}</div>
+                            <div><strong>PEMBERI KERJA:</strong> ${cust.name}<br><strong>TARGET TANGGAL:</strong> ${p.date || '-'}</div>
+                        </div>
+                        <div>
+                            <span class="font-bold text-slate-800 block mb-1">Instruksi & Catatan Khusus Produksi:</span>
+                            <div contenteditable="true" onblur="updateSpkNotes(this.innerText)" class="p-3 bg-amber-50/50 border border-amber-200 rounded-lg text-slate-800">${p.spkNotes || 'Kerjakan sesuai gambar kerja.'}</div>
+                        </div>
+                        <div>
+                            <span class="font-bold text-slate-800 block mb-1">Tabel Rincian Pekerjaan Workshop:</span>
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-900 text-white uppercase text-[10px]">
+                                        <th class="p-2 w-10 text-center">NO</th>
+                                        <th class="p-2">ITEM PEKERJAAN</th>
+                                        <th class="p-2">SPESIFIKASI MATERIAL</th>
+                                        <th class="p-2 text-center">QTY / TARGET</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${spkRows}</tbody>
+                            </table>
+                        </div>
+                        ${renderSignaturesSideBySideHTML(comp, cust)}
+                    </div>
+                `;
+            } else if (type === 'invoice') {
+                tagEl.innerText = "INVOICE";
+                titleEl.innerText = "Invoice Tagihan & Pembayaran";
+                document.getElementById('docMetaNumber').innerText = `NOMOR: INV/${p.id}`;
+
+                const dpVal = Number(p.dpPaid) || 0;
+                const sisaVal = Math.max(0, t.grandTotal - dpVal);
+
+                html = `
+                    <div class="sheet-half-a4 mx-auto space-y-4 bg-white relative">
+                        <div class="flex justify-between items-start border-b pb-3">
+                            <div>
+                                <h2 class="text-base font-extrabold uppercase text-slate-900">INVOICE / TAGIHAN</h2>
+                                <p class="text-[11px] text-slate-500 font-mono">INV/${p.id}</p>
+                            </div>
+                            <div class="text-right text-[11px]">
+                                <span class="font-bold text-slate-800 block">PEMBERI KERJA: ${cust.name}</span>
+                                <span class="text-slate-500 block">${cust.address}</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <tr class="bg-slate-100"><th class="p-2">Uraian Pekerjaan</th><th class="p-2 text-right">Jumlah</th></tr>
+                                <tr class="border-b"><td class="p-2">${p.title} (${p.category})</td><td class="p-2 text-right font-mono font-bold">${formatRupiah(t.subtotal)}</td></tr>
+                                <tr class="border-b"><td class="p-2">PPN (${appState.company.ppnRate}%)</td><td class="p-2 text-right font-mono">${formatRupiah(t.ppn)}</td></tr>
+                            </table>
+                        </div>
+
+                        <!-- Invoice Summary: Bank Account on Left, Totals on Right -->
+                        <div class="bg-slate-50 p-3 rounded-lg border grid grid-cols-2 gap-4 items-center text-xs">
+                            <div class="font-mono text-[11px] bg-white p-2.5 border rounded space-y-1">
+                                <strong class="text-slate-900 block">REKENING PEMBAYARAN:</strong>
+                                <span>${comp.bankName}: <strong>${comp.bankAccNo}</strong></span><br>
+                                <span class="text-slate-500">a.n. ${comp.bankAccName}</span>
+                            </div>
+                            <div class="space-y-1.5 text-right">
+                                <div class="flex justify-between text-slate-700"><span>Total Nilai Pekerjaan:</span><strong>${formatRupiah(t.grandTotal)}</strong></div>
+                                <div class="flex justify-between items-center text-slate-700">
+                                    <span>DP / Terbayar:</span>
+                                    <input type="number" value="${dpVal}" onchange="updateInvoiceDp(this.value)" class="w-28 bg-white border border-slate-300 rounded p-1 text-right font-mono font-bold text-emerald-600">
+                                </div>
+                                <div class="flex justify-between text-sm font-extrabold text-rose-600 border-t pt-1">
+                                    <span>Sisa Pelunasan:</span>
+                                    <span>${formatRupiah(sisaVal)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${renderSignaturesSideBySideHTML(comp, cust)}
+                    </div>
+                `;
+            } else if (type === 'kwitansi') {
+                tagEl.innerText = "KWITANSI";
+                titleEl.innerText = "Kwitansi Pembayaran Setengah A4";
+                document.getElementById('docMetaNumber').innerText = `NOMOR: KWT/${p.id}`;
+
+                const dpVal = Number(p.dpPaid) || 0;
+                const grand = t.grandTotal;
+                
+                let payStatus = "BELUM BAYAR";
+                let statusColor = "text-rose-600 border-rose-500 bg-rose-50";
+                let activeAmount = 0;
+                let paymentDesc = `Tagihan Pekerjaan: ${p.title}`;
+
+                if (dpVal >= grand && grand > 0) {
+                    payStatus = "LUNAS";
+                    statusColor = "text-emerald-600 border-emerald-500 bg-emerald-50";
+                    activeAmount = grand;
+                    paymentDesc = `Pelunasan Pekerjaan: ${p.title}`;
+                } else if (dpVal > 0) {
+                    payStatus = "PAID DP";
+                    statusColor = "text-amber-600 border-amber-500 bg-amber-50";
+                    activeAmount = dpVal;
+                    paymentDesc = `Pembayaran DP (Down Payment) Pekerjaan: ${p.title}`;
+                } else {
+                    activeAmount = 0;
+                    paymentDesc = `Tagihan Pekerjaan: ${p.title}`;
+                }
+
+                html = `
+                    <div class="sheet-half-a4 mx-auto space-y-3 bg-white relative overflow-hidden">
+                        <div class="watermark-banner ${statusColor}">${payStatus}</div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <div>
+                                <h2 class="text-base font-extrabold uppercase text-slate-900">KWITANSI PEMBAYARAN</h2>
+                                <p class="text-[10px] text-slate-500 font-mono">Ref. Invoice: INV/${p.id}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full border text-xs font-black uppercase ${statusColor}">${payStatus}</span>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs bg-slate-50/70 p-3.5 rounded-xl border">
+                            <div class="flex justify-between border-b pb-1.5">
+                                <span class="text-slate-500">Telah Diterima Dari (Pemberi Kerja):</span>
+                                <strong class="text-slate-900">${cust.name}</strong>
+                            </div>
+                            
+                            <!-- NUMERICAL AMOUNT FIRST -->
+                            <div class="flex justify-between border-b pb-1.5 items-center">
+                                <span class="text-slate-500">Jumlah Diterima (Rp):</span>
+                                <span class="text-base font-mono font-black text-amber-600 bg-white px-3 py-1 rounded border">${formatRupiah(activeAmount)}</span>
+                            </div>
+
+                            <!-- SPELLED OUT NOMINAL (TERBILANG) BELOW IT -->
+                            <div class="space-y-1">
+                                <span class="text-slate-500 block">Terbilang (Nominal Tulisan EYD):</span>
+                                <div class="bg-white p-2 rounded border italic font-bold text-slate-800">${terbilangRupiah(activeAmount)}</div>
+                            </div>
+
+                            <div class="flex justify-between pt-1">
+                                <span class="text-slate-500">Untuk Pembayaran:</span>
+                                <span class="font-medium text-slate-800 text-right">${paymentDesc}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-[11px] bg-slate-100 p-2 rounded-lg text-center font-semibold">
+                            <div>Total Kontrak: ${formatRupiah(grand)}</div>
+                            <div>Terbayar: ${formatRupiah(activeAmount)}</div>
+                            <div>Sisa Tagihan: ${formatRupiah(Math.max(0, grand - activeAmount))}</div>
+                        </div>
+
+                        ${renderSignaturesSideBySideHTML(comp, cust)}
+                    </div>
+                `;
+            } else if (type === 'bast') {
+                tagEl.innerText = "BERITA ACARA";
+                titleEl.innerText = "Berita Acara Serah Terima (BAST)";
+                document.getElementById('docMetaNumber').innerText = `NOMOR: BAST/${p.id}`;
+
+                html = `
+                    <div class="space-y-4 text-xs">
+                        <div class="text-center font-bold uppercase tracking-wide text-sm border-b pb-2">
+                            BERITA ACARA SERAH TERIMA (BAST) PEKERJAAN<br>
+                            <span class="text-xs font-normal text-slate-600">${p.title}</span>
+                        </div>
+                        <p>Pada hari ini tanggal ${p.date || '16 September 2026'}, bertempat di ${comp.city}, telah dilakukan serah terima pekerjaan secara resmi antara:</p>
+                        <div class="pl-4 space-y-1 bg-slate-50 p-3 rounded-lg border">
+                            <p><strong>1. PIHAK PERTAMA (Pemberi Kerja):</strong> ${cust.name}</p>
+                            <p><strong>2. PIHAK KEDUA (Penerima Kerja):</strong> ${comp.name} (${comp.brand})</p>
+                        </div>
+                        <p>PIHAK KEDUA telah menyelesaikan seluruh pekerjaan fabrikasi konstruksi besi sesuai RAB, dan PIHAK PERTAMA telah memeriksa serta menerima hasil pekerjaan dengan baik tanpa catatan kerusakan.</p>
+                        <p>Demikian Berita Acara Serah Terima ini dibuat rangkap dua untuk dipergunakan sebagaimana mestinya.</p>
+                        ${renderSignaturesSideBySideHTML(comp, cust)}
+                    </div>
+                `;
             }
+
+            container.innerHTML = html;
         }
 
-        function populateCompanyForm() {
-            const comp = appState.company;
-            if (!comp) return;
-            if (document.getElementById('cfgCompanyName')) document.getElementById('cfgCompanyName').value = comp.name || '';
-            if (document.getElementById('cfgBrandName')) document.getElementById('cfgBrandName').value = comp.brand || '';
-            if (document.getElementById('cfgTagline')) document.getElementById('cfgTagline').value = comp.tagline || '';
-            if (document.getElementById('cfgAddress')) document.getElementById('cfgAddress').value = comp.address || '';
-            if (document.getElementById('cfgCity')) document.getElementById('cfgCity').value = comp.city || '';
-            if (document.getElementById('cfgProvince')) document.getElementById('cfgProvince').value = comp.province || '';
-            if (document.getElementById('cfgPhone')) document.getElementById('cfgPhone').value = comp.phone || '';
-            if (document.getElementById('cfgEmail')) document.getElementById('cfgEmail').value = comp.email || '';
-            if (document.getElementById('cfgNib')) document.getElementById('cfgNib').value = comp.nib || '';
-            if (document.getElementById('cfgNpwp')) document.getElementById('cfgNpwp').value = comp.npwp || '';
-            if (document.getElementById('cfgPkpStatus')) document.getElementById('cfgPkpStatus').value = comp.pkpStatus || 'PKP (Pengusaha Kena Pajak)';
-            if (document.getElementById('cfgPpnRate')) document.getElementById('cfgPpnRate').value = comp.ppnRate || 11;
-            if (document.getElementById('cfgDirector')) document.getElementById('cfgDirector').value = comp.director || '';
-            if (document.getElementById('cfgDirectorTitle')) document.getElementById('cfgDirectorTitle').value = comp.directorTitle || '';
-            if (document.getElementById('cfgBankName')) document.getElementById('cfgBankName').value = comp.bankName || '';
-            if (document.getElementById('cfgBankAccNo')) document.getElementById('cfgBankAccNo').value = comp.bankAccNo || '';
-            if (document.getElementById('cfgBankAccName')) document.getElementById('cfgBankAccName').value = comp.bankAccName || '';
-            if (document.getElementById('cfgShowStamp')) document.getElementById('cfgShowStamp').checked = comp.showStamp !== false;
-
-            if (comp.logoUrl && document.getElementById('logoPreview')) {
-                document.getElementById('logoPreview').src = comp.logoUrl;
-                document.getElementById('logoPreview').classList.remove('hidden');
-                if (document.getElementById('logoIcon')) document.getElementById('logoIcon').classList.add('hidden');
-            }
-            if (comp.signatureUrl && document.getElementById('signaturePreview')) {
-                document.getElementById('signaturePreview').src = comp.signatureUrl;
-                document.getElementById('signaturePreview').classList.remove('hidden');
-                if (document.getElementById('signatureIcon')) document.getElementById('signatureIcon').classList.add('hidden');
-            }
-            if (comp.stampUrl && document.getElementById('stampPreview')) {
-                document.getElementById('stampPreview').src = comp.stampUrl;
-                document.getElementById('stampPreview').classList.remove('hidden');
-                if (document.getElementById('stampIcon')) document.getElementById('stampIcon').classList.add('hidden');
-            }
+        /* Perfectly Aligned Side-by-Side Signatures for First & Second Party */
+        function renderSignaturesSideBySideHTML(comp, cust) {
+            return `
+                <div class="grid grid-cols-2 gap-8 pt-6 mt-6 border-t text-xs items-start">
+                    <div class="flex flex-col justify-between items-center text-center h-40">
+                        <div>
+                            <span class="font-bold text-slate-800 block uppercase">PIHAK PERTAMA</span>
+                            <span class="text-[10px] text-slate-500 block">Pemberi Kerja</span>
+                        </div>
+                        <div class="h-16 flex items-center justify-center">
+                            <!-- Empty slot for Pihak Pertama signature if needed -->
+                        </div>
+                        <div class="font-bold text-slate-900 border-b border-dashed border-slate-400 pb-1 inline-block min-w-[180px]">${cust.name}</div>
+                    </div>
+                    <div class="flex flex-col justify-between items-center text-center h-40 relative">
+                        <div>
+                            <span class="font-bold text-slate-800 block uppercase">PIHAK KEDUA</span>
+                            <span class="text-[10px] text-slate-500 block">Penerima Kerja (${comp.name})</span>
+                        </div>
+                        <div class="relative h-16 w-full flex items-center justify-center">
+                            ${comp.signatureUrl ? `<img src="${comp.signatureUrl}" class="absolute max-h-14 object-contain z-10">` : ''}
+                            ${comp.showStamp && comp.stampUrl ? `<img src="${comp.stampUrl}" class="absolute max-h-20 object-contain stamp-overlay z-20 opacity-80" style="right: calc(50% - 75px);">` : ''}
+                        </div>
+                        <div class="font-bold text-slate-900 border-b border-dashed border-slate-400 pb-1 inline-block min-w-[180px]">${comp.director}</div>
+                    </div>
+                </div>
+            `;
         }
 
-        function saveCompanySettings() {
-            appState.company.name = document.getElementById('cfgCompanyName').value;
-            appState.company.brand = document.getElementById('cfgBrandName').value;
-            appState.company.tagline = document.getElementById('cfgTagline').value;
-            appState.company.address = document.getElementById('cfgAddress').value;
-            appState.company.city = document.getElementById('cfgCity').value;
-            appState.company.province = document.getElementById('cfgProvince').value;
-            appState.company.phone = document.getElementById('cfgPhone').value;
-            appState.company.email = document.getElementById('cfgEmail').value;
-            appState.company.nib = document.getElementById('cfgNib').value;
-            appState.company.npwp = document.getElementById('cfgNpwp').value;
-            appState.company.pkpStatus = document.getElementById('cfgPkpStatus').value;
-            appState.company.ppnRate = Number(document.getElementById('cfgPpnRate').value) || 11;
-            appState.company.director = document.getElementById('cfgDirector').value;
-            appState.company.directorTitle = document.getElementById('cfgDirectorTitle').value;
-            appState.company.bankName = document.getElementById('cfgBankName').value;
-            appState.company.bankAccNo = document.getElementById('cfgBankAccNo').value;
-            appState.company.bankAccName = document.getElementById('cfgBankAccName').value;
-            appState.company.showStamp = document.getElementById('cfgShowStamp').checked;
-
-            saveStateToStorage();
-            renderDashboard();
-            renderRabTable();
-            showToast("Pengaturan perusahaan berhasil disimpan!");
-        }
-
-        function updateCustomInvoiceTotal(val) {
-            const proj = getActiveProject();
-            if (!proj) return;
-            proj.customInvoiceTotal = val === "" || val === null ? null : Number(val);
-            saveStateToStorage();
-            renderDashboard();
-            switchDocType('invoice');
-        }
-
-        function updateProjectDp(val) {
-            const proj = getActiveProject();
-            if (!proj) return;
-            proj.dpPaid = Number(val) || 0;
-            saveStateToStorage();
-            renderDashboard();
-            switchDocType('invoice');
-        }
-
-        function saveDocEdit(type, index, text) {
-            const proj = getActiveProject();
-            if (!proj) return;
-            if (type === 'clause') {
-                if (!proj.contractClauses) proj.contractClauses = [];
-                proj.contractClauses[index] = text.replace(/^\d+\.\s*/, '').trim();
-            } else if (type === 'spkNotes') {
-                proj.spkNotes = text.trim();
-            }
+        /* Document Editing Helpers */
+        function updateClauseText(idx, newText) {
+            const p = getActiveProject();
+            if (!p) return;
+            p.contractClauses[idx] = newText;
             saveStateToStorage();
         }
 
         function addNewClause() {
-            const proj = getActiveProject();
-            if (!proj) return;
-            if (!proj.contractClauses) proj.contractClauses = [];
-            proj.contractClauses.push("Pasal baru: PIHAK KEDUA dan PIHAK PERTAMA menyepakati syarat tambahan.");
+            const p = getActiveProject();
+            if (!p) return;
+            p.contractClauses.push("Ketentuan tambahan baru dalam kontrak kerja.");
             saveStateToStorage();
-            switchDocType('kontrak');
-            showToast("Pasal baru berhasil ditambahkan!");
+            renderDocumentPreview('kontrak');
+            showToast("Pasal baru ditambahkan.");
         }
 
-        function removeClause(index) {
-            const proj = getActiveProject();
-            if (!proj || !proj.contractClauses) return;
-            proj.contractClauses.splice(index, 1);
+        function removeClause(idx) {
+            const p = getActiveProject();
+            if (!p) return;
+            p.contractClauses.splice(idx, 1);
             saveStateToStorage();
-            switchDocType('kontrak');
-            showToast("Pasal berhasil dihapus");
+            renderDocumentPreview('kontrak');
+            showToast("Pasal dihapus.");
         }
 
-        function generateKwitansiHTML(proj, cust) {
-            const comp = appState.company;
-            const totals = calculateProjectTotals(proj);
-
-            let statusText = "BELUM BAYAR";
-            let statusBg = "border-rose-500 text-rose-600 bg-rose-50/20";
-            let badgeBg = "bg-rose-100 text-rose-700 border-rose-300";
-
-            if (totals.dpPaid >= totals.grandTotal && totals.grandTotal > 0) {
-                statusText = "LUNAS";
-                statusBg = "border-emerald-600 text-emerald-600 bg-emerald-50/20";
-                badgeBg = "bg-emerald-100 text-emerald-800 border-emerald-400";
-            } else if (totals.dpPaid > 0) {
-                statusText = "PAID DP";
-                statusBg = "border-amber-500 text-amber-600 bg-amber-50/20";
-                badgeBg = "bg-amber-100 text-amber-800 border-amber-400";
-            }
-
-            const nominalToDisplay = totals.dpPaid > 0 ? totals.dpPaid : totals.grandTotal;
-
-            return `
-                <div class="relative overflow-hidden p-2">
-                    <div class="watermark-banner ${statusBg}">
-                        ${statusText}
-                    </div>
-
-                    <div class="text-center space-y-1 mb-4">
-                        <h2 class="text-sm font-extrabold uppercase tracking-wider underline">KWITANSI BUKTI PEMBAYARAN</h2>
-                        <p class="text-[11px] font-mono">Nomor: KWT/${proj.id}</p>
-                        <div class="inline-block mt-1 px-3 py-0.5 rounded border text-[10px] font-extrabold uppercase ${badgeBg}">
-                            Status Pembayaran: ${statusText}
-                        </div>
-                    </div>
-
-                    <table class="w-full text-[11px] border-separate space-y-2">
-                        <tr>
-                            <td class="w-36 font-semibold text-slate-600">Telah Diterima Dari:</td>
-                            <td class="font-bold text-slate-900 border-b border-slate-300 pb-1">${cust.name} (${cust.type})</td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold text-slate-600">Untuk Pembayaran:</td>
-                            <td class="text-slate-800 border-b border-slate-300 pb-1">${proj.title} (Lokasi: ${proj.location})</td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold text-slate-600">Nominal Uang (Angka):</td>
-                            <td class="font-extrabold font-mono text-base text-slate-900 border-b border-slate-300 pb-1">${formatRupiah(nominalToDisplay)}</td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold text-slate-600">Terbilang (Tulisan):</td>
-                            <td class="italic font-bold text-amber-700 bg-amber-50/70 p-2 rounded border border-amber-200 capitalize">${terbilangRupiah(nominalToDisplay)}</td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold text-slate-600">Catatan Ringkasan:</td>
-                            <td class="text-slate-600 border-b border-slate-200 pb-1">Total Proyek: ${formatRupiah(totals.grandTotal)} | Terbayar/DP: ${formatRupiah(totals.dpPaid)} | Sisa: ${formatRupiah(totals.remaining)}</td>
-                        </tr>
-                    </table>
-                </div>
-            `;
+        function updateSpkNotes(notes) {
+            const p = getActiveProject();
+            if (!p) return;
+            p.spkNotes = notes;
+            saveStateToStorage();
         }
 
-        function generateBastHTML(proj, cust) {
-            const comp = appState.company;
-
-            let itemsList = proj.rabItems.map((item, idx) => `
-                <tr class="border-b border-slate-200">
-                    <td class="p-2 text-center font-bold">${idx + 1}</td>
-                    <td class="p-2 font-bold">${item.item}</td>
-                    <td class="p-2 text-slate-600">${item.spec}</td>
-                    <td class="p-2 text-center font-bold">${item.qty} ${item.unit}</td>
-                    <td class="p-2 text-center text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Selesai Baik</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="text-center space-y-1 my-3">
-                    <h2 class="text-sm font-extrabold uppercase tracking-wider underline">BERITA ACARA SERAH TERIMA PEKERJAAN (BAST)</h2>
-                    <p class="text-[11px] font-mono">Nomor: BAST-SERAH/${proj.id}</p>
-                </div>
-
-                <p class="text-justify leading-relaxed text-[11px]">
-                    Pada hari ini, disepakati bahwa <strong>PIHAK KEDUA (Penerima Kerja)</strong> telah menyelesaikan 100% seluruh hasil pekerjaan konstruksi/fabrikasi besi dan menyerahkan hasilnya dalam kondisi baik kepada <strong>PIHAK PERTAMA (Pemberi Kerja)</strong>.
-                </p>
-
-                <div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] my-3">
-                    <div>
-                        <h4 class="font-bold underline text-slate-800 uppercase">PIHAK PERTAMA (Pemberi Kerja):</h4>
-                        <p><strong>Nama:</strong> ${cust.name}</p>
-                        <p><strong>Alamat:</strong> ${cust.address}</p>
-                    </div>
-                    <div>
-                        <h4 class="font-bold underline text-slate-800 uppercase">PIHAK KEDUA (Penerima Kerja):</h4>
-                        <p><strong>Perusahaan:</strong> ${comp.name}</p>
-                        <p><strong>Pimpinan:</strong> ${comp.director} (${comp.directorTitle})</p>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="font-bold underline uppercase text-[11px]">DAFTAR ITEM PEKERJAAN YANG DISERAH TERIMAKAN</h3>
-                    <table class="w-full text-left text-[11px] border-collapse border border-slate-300">
-                        <thead class="bg-slate-100 font-bold text-slate-700">
-                            <tr>
-                                <th class="p-2 border border-slate-300 text-center w-8">NO</th>
-                                <th class="p-2 border border-slate-300">ITEM PEKERJAAN</th>
-                                <th class="p-2 border border-slate-300">SPESIFIKASI PEKERJAAN</th>
-                                <th class="p-2 border border-slate-300 text-center w-20">QTY</th>
-                                <th class="p-2 border border-slate-300 text-center w-28">KONDISI</th>
-                            </tr>
-                        </thead>
-                        <tbody>${itemsList}</tbody>
-                    </table>
-                </div>
-
-                <p class="text-justify leading-relaxed text-[11px] pt-2">
-                    Dengan ditandatanganinya Berita Acara Serah Terima ini, maka PIHAK PERTAMA menyatakan menerima hasil pekerjaan secara utuh dan siap melakukan proses pelunasan sesuai kesepakatan surat kontrak.
-                </p>
-            `;
+        function updateInvoiceDp(val) {
+            const p = getActiveProject();
+            if (!p) return;
+            p.dpPaid = Number(val) || 0;
+            saveStateToStorage();
+            renderDashboard();
+            renderDocumentPreview('invoice');
+            showToast("DP Invoice diperbarui.");
         }
 
-        function generateRabQuotationHTML(proj, cust) {
-            const comp = appState.company;
-            const totals = calculateProjectTotals(proj);
-
-            let itemsTable = proj.rabItems.map((item, idx) => `
-                <tr class="border-b border-slate-200">
-                    <td class="p-2 text-center font-bold">${idx + 1}</td>
-                    <td class="p-2 font-bold">${item.item}</td>
-                    <td class="p-2 text-slate-600">${item.spec}</td>
-                    <td class="p-2 text-center">${item.qty} ${item.unit}</td>
-                    <td class="p-2 text-right font-mono">${formatRupiah(item.totalJual / item.qty)}</td>
-                    <td class="p-2 text-right font-mono font-bold text-slate-900">${formatRupiah(item.totalJual)}</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="text-center space-y-1 my-3">
-                    <h2 class="text-sm font-extrabold uppercase tracking-wider underline">SURAT PENAWARAN HARGA & RINCIAN RAB (QUOTATION)</h2>
-                    <p class="text-[11px] font-mono">Nomor: QUO-RAB/${proj.id}</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] my-3">
-                    <div>
-                        <p><strong>Kepada Yth (Pemberi Kerja):</strong> ${cust.name}</p>
-                        <p><strong>Perusahaan/Tipe:</strong> ${cust.type}</p>
-                        <p><strong>Alamat:</strong> ${cust.address}</p>
-                    </div>
-                    <div class="text-right">
-                        <p><strong>Proyek:</strong> ${proj.title}</p>
-                        <p><strong>Lokasi:</strong> ${proj.location}</p>
-                        <p><strong>Tanggal Penawaran:</strong> ${proj.date || new Date().toISOString().split('T')[0]}</p>
-                    </div>
-                </div>
-
-                <table class="w-full text-left text-[11px] border-collapse border border-slate-300">
-                    <thead class="bg-slate-100 font-bold text-slate-700">
-                        <tr>
-                            <th class="p-2 border border-slate-300 text-center w-8">NO</th>
-                            <th class="p-2 border border-slate-300">ITEM PEKERJAAN</th>
-                            <th class="p-2 border border-slate-300">SPESIFIKASI MATERIAL</th>
-                            <th class="p-2 border border-slate-300 text-center w-16">QTY</th>
-                            <th class="p-2 border border-slate-300 text-right w-28">HARGA SATUAN</th>
-                            <th class="p-2 border border-slate-300 text-right w-32">SUBTOTAL JUAL</th>
-                        </tr>
-                    </thead>
-                    <tbody>${itemsTable}</tbody>
-                </table>
-
-                <div class="flex justify-end pt-3">
-                    <div class="w-72 space-y-1 text-[11px] text-right">
-                        <div class="flex justify-between text-slate-600">
-                            <span>Subtotal Pekerjaan:</span>
-                            <span class="font-bold font-mono text-slate-800">${formatRupiah(totals.subtotal)}</span>
-                        </div>
-                        <div class="flex justify-between text-slate-600">
-                            <span>PPN (${comp.ppnRate}%):</span>
-                            <span class="font-bold font-mono text-slate-800">${formatRupiah(totals.ppn)}</span>
-                        </div>
-                        <div class="flex justify-between text-sm font-extrabold text-slate-900 border-t border-slate-400 pt-1">
-                            <span>GRAND TOTAL:</span>
-                            <span class="text-amber-600 font-mono">${formatRupiah(totals.grandTotal)}</span>
-                        </div>
-                        <p class="text-[10px] italic text-slate-500 pt-1">Terbilang: ${terbilangRupiah(totals.grandTotal)}</p>
-                    </div>
-                </div>
-            `;
-        }
-
+        /* Print, PDF & Word Export */
         function triggerPrint() {
             window.print();
         }
@@ -2388,54 +2084,125 @@
         function downloadPDF() {
             const element = document.getElementById('printableArea');
             if (!element) return;
-            showToast("Menyiapkan dokumen PDF...");
-            
+            showToast("Memproses file PDF A4...");
             const opt = {
-                margin: [8, 8, 8, 8],
-                filename: `${currentDocumentType.toUpperCase()}_${appState.activeProjectId.replace(/\//g, '-')}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin:       10,
+                filename:     `${currentDocumentType.toUpperCase()}_${appState.activeProjectId.replace(/\//g, '-')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-
-            if (window.html2pdf) {
-                window.html2pdf().set(opt).from(element).save().then(() => {
-                    showToast("PDF berhasil di-download!");
-                }).catch((err) => {
-                    console.warn("html2pdf fallback to print:", err);
-                    window.print();
-                });
-            } else {
+            html2pdf().from(element).set(opt).save().catch(err => {
+                console.warn("PDF Export warning:", err);
                 window.print();
-            }
+            });
         }
 
         function exportToWord() {
-            const element = document.getElementById('printableArea');
-            if (!element) return;
-            
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Dokumen Export</title><style>body{font-family:Arial,sans-serif;font-size:11pt;} table{border-collapse:collapse;width:100%;} th,td{border:1px solid #ccc;padding:6px;}</style></head><body>";
-            const footer = "</body></html>";
-            const html = header + element.innerHTML + footer;
-            
-            const blob = new Blob(['\ufeff', html], {
-                type: 'application/msword'
-            });
-            
-            const url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
-            const downloadLink = document.createElement("a");
-            document.body.appendChild(downloadLink);
-            
-            if (navigator.msSaveOrOpenBlob) {
-                navigator.msSaveOrOpenBlob(blob, `${currentDocumentType.toUpperCase()}_${appState.activeProjectId.replace(/\//g, '-')}.doc`);
-            } else {
-                downloadLink.href = url;
-                downloadLink.download = `${currentDocumentType.toUpperCase()}_${appState.activeProjectId.replace(/\//g, '-')}.doc`;
-                downloadLink.click();
-            }
-            document.body.removeChild(downloadLink);
-            showToast("Dokumen Word berhasil di-export!");
+            const html = document.getElementById('printableArea').outerHTML;
+            const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentDocumentType.toUpperCase()}_${appState.activeProjectId.replace(/\//g, '-')}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast("Dokumen Word (.doc) terunduh.");
         }
+
+        /* Image & Logo Upload Handler */
+        function handleImageUpload(input, type) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const result = e.target.result;
+                    if (type === 'logo') {
+                        appState.company.logoUrl = result;
+                        document.getElementById('logoPreview').src = result;
+                        document.getElementById('logoPreview').classList.remove('hidden');
+                    } else if (type === 'signature') {
+                        appState.company.signatureUrl = result;
+                        document.getElementById('signaturePreview').src = result;
+                        document.getElementById('signaturePreview').classList.remove('hidden');
+                    } else if (type === 'stamp') {
+                        appState.company.stampUrl = result;
+                        document.getElementById('stampPreview').src = result;
+                        document.getElementById('stampPreview').classList.remove('hidden');
+                    }
+                    saveStateToStorage();
+                    showToast(`File ${type} berhasil diunggah!`);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function populateCompanyForm() {
+            const c = appState.company;
+            document.getElementById('cfgCompanyName').value = c.name || '';
+            document.getElementById('cfgBrandName').value = c.brand || '';
+            document.getElementById('cfgTagline').value = c.tagline || '';
+            document.getElementById('cfgAddress').value = c.address || '';
+            document.getElementById('cfgCity').value = c.city || '';
+            document.getElementById('cfgProvince').value = c.province || '';
+            document.getElementById('cfgPhone').value = c.phone || '';
+            document.getElementById('cfgEmail').value = c.email || '';
+            document.getElementById('cfgNib').value = c.nib || '';
+            document.getElementById('cfgNpwp').value = c.npwp || '';
+            document.getElementById('cfgPpnRate').value = c.ppnRate || 11;
+            document.getElementById('cfgDirector').value = c.director || '';
+            document.getElementById('cfgBankName').value = c.bankName || '';
+            document.getElementById('cfgBankAccNo').value = c.bankAccNo || '';
+            document.getElementById('cfgBankAccName').value = c.bankAccName || '';
+            document.getElementById('cfgShowStamp').checked = c.showStamp !== false;
+
+            if (c.logoUrl) {
+                document.getElementById('logoPreview').src = c.logoUrl;
+                document.getElementById('logoPreview').classList.remove('hidden');
+            }
+            if (c.signatureUrl) {
+                document.getElementById('signaturePreview').src = c.signatureUrl;
+                document.getElementById('signaturePreview').classList.remove('hidden');
+            }
+            if (c.stampUrl) {
+                document.getElementById('stampPreview').src = c.stampUrl;
+                document.getElementById('stampPreview').classList.remove('hidden');
+            }
+        }
+
+        function saveCompanySettings() {
+            const c = appState.company;
+            c.name = document.getElementById('cfgCompanyName').value;
+            c.brand = document.getElementById('cfgBrandName').value;
+            c.tagline = document.getElementById('cfgTagline').value;
+            c.address = document.getElementById('cfgAddress').value;
+            c.city = document.getElementById('cfgCity').value;
+            c.province = document.getElementById('cfgProvince').value;
+            c.phone = document.getElementById('cfgPhone').value;
+            c.email = document.getElementById('cfgEmail').value;
+            c.nib = document.getElementById('cfgNib').value;
+            c.npwp = document.getElementById('cfgNpwp').value;
+            c.ppnRate = Number(document.getElementById('cfgPpnRate').value) || 11;
+            c.director = document.getElementById('cfgDirector').value;
+            c.bankName = document.getElementById('cfgBankName').value;
+            c.bankAccNo = document.getElementById('cfgBankAccNo').value;
+            c.bankAccName = document.getElementById('cfgBankAccName').value;
+            c.showStamp = document.getElementById('cfgShowStamp').checked;
+
+            saveStateToStorage();
+            showToast("Pengaturan perusahaan berhasil disimpan!");
+        }
+
+        /* App Initialization on Window Load */
+        window.onload = function() {
+            loadStateFromStorage();
+            checkAuth();
+            populateProjectSelector();
+            populateCompanyForm();
+            renderDashboard();
+            renderCustomers();
+            renderMaterials();
+        };
     </script>
 </body>
 </html>
